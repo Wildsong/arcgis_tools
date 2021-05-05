@@ -49,22 +49,25 @@ def process_cc_poi(feature_class, datestamp, output_location):
         'Created',
         "Editor",
         "Last_Edit",
-        "Alias",
-        ]]
+    ]]
 
     # Rename
     sdf.rename(columns={
-        'Type' : 'Category',
-        'Type2' : 'Subcategory',
-    })
+        'Name' : 'name',
+        'Type' : 'category',
+        'Type2' : 'subcategory',
+        'Creator': 'created_user',
+        'Created': 'created_date',
+        'Editor': 'last_edited_user',
+        'Last_Edit' : 'last_edited_date',
+    }, inplace=True)
 
-    # Create aliases
-    # The original column names are left untouched,
-    # but I assign more readable aliases here.
-    # NB some of these names are chosen to match up with the Esri point_address locator.
-    # NB It turns out assigning some them in the locator makes the locator results icky.
-    d_aliases = { 
-    }
+    # Change column types
+    sdf[['created_date']]  = sdf[['created_date']].astype("datetime64")
+    sdf[['last_edited_date']]  = sdf[['last_edited_date']].astype("datetime64")
+
+    # Add some fields and set defaults on them.
+    sdf.loc[:, 'source'] = 'clatsop'
 
     print("We have %d points." % len(sdf))
     print(sdf.head(5))
@@ -73,7 +76,6 @@ def process_cc_poi(feature_class, datestamp, output_location):
 
     wm_fc = output_location + '/' + 'poi_wm_' + datestamp
     sdf.spatial.to_featureclass(wm_fc, sanitize_columns=False)
-    set_aliases(wm_fc, d_aliases)
     print("Wrote %d points to \"%s\"." % (len(sdf), wm_fc))
 
     local_fc = output_location + '/poi_local_' + datestamp
@@ -84,7 +86,6 @@ def process_cc_poi(feature_class, datestamp, output_location):
         out_coor_system=sref, 
         #transform_method='NAD_1983_HARN_To_WGS_1984_2'
     )
-    set_aliases(local_fc, d_aliases)
 
     return local_fc
 
@@ -107,12 +108,6 @@ def process_gnis_points(feature_class, datestamp, output_location):
     print("Columns: ", sdf.columns)
     print("Types:", sdf.dtypes)
 
-    # Clean!
-
-    # Change float64 columns to strings, removing the stupid ".0" endings.
-    #sdf[['DATE_EDITED']] = sdf[['DATE_EDITED']].astype("datetime64[ns]")
-    sdf[['FEATURE_ID']]  = sdf[['FEATURE_ID']].astype("int64")
-
     # Columns that we're keeping
     # There are a bunch ignored including COUNTY STATE COUNTRY
     # and specialize ones that probably only matter to GeoComm like rSrcId
@@ -123,7 +118,7 @@ def process_gnis_points(feature_class, datestamp, output_location):
         'FEATURE_NAME',  # 
         "FEATURE_CLASS", # Make the domain from this
         'ELEV_IN_FT',
-        'MAP_NAME',      # Quad?? "Warrenton", "Tillamook Head"...
+#        'MAP_NAME',      # Quad?? "Warrenton", "Tillamook Head"...
         "DATE_CREATED",
         "DATE_EDITED",
         "Elevation_Source", # "GNIS", "LIDAR DEM", "10m DEM", ...
@@ -131,28 +126,22 @@ def process_gnis_points(feature_class, datestamp, output_location):
 
     # Rename some fields
     sdf.rename(columns={
-        'FEATURE_CLASS' : 'Category',
-        'DATE_CREATED' : 'Created',
-        'DATE_EDITED' : 'Last_Edit',
-    })
+        'FEATURE_NAME'  : 'name',
+        'FEATURE_CLASS' : 'category',
+        'DATE_CREATED'  : 'created_date',
+        'DATE_EDITED'   : 'last_edited_date',
+    }, inplace=True)
 
     # Add some fields and set defaults on them.
-    sdf.loc[:, 'Creator'] = 'GNIS'
-    sdf.loc[:, 'Editor'] = ''
+    sdf.loc[:, 'created_user'] = 'GNIS'
+    sdf.loc[:, 'last_edited_user'] = ''
+    sdf.loc[:, 'source'] = 'gnis'
+    sdf.loc[:, 'subcategory'] = sdf.loc[:, 'category']
 
-    # Create aliases
-    # The original column names are left untouched,
-    # but I assign more readable aliases here.
-    # NB some of these names are chosen to match up with the Esri point_address locator.
-    # NB It turns out assigning some them in the locator makes the locator results icky.
-    d_aliases = { 
-        'FEATURE_ID' : 'ID', 
-        'FEATURE_NAME': "Name",
-        'FEATURE_CLASS' : 'Category',
-        'ELEV_IN_FT' : 'Elevation', 
-        'MAP_NAME': 'Quad Name',
-        'Elevation_Source': 'Elevation Source'
-    }
+    # Change float64 column to string, to remove the stupid ".0" endings.
+    sdf[['FEATURE_ID']]  = sdf[['FEATURE_ID']].astype("int64")
+    sdf[['created_date']]  = sdf[['created_date']].astype("datetime64")
+    sdf[['last_edited_date']]  = sdf[['last_edited_date']].astype("datetime64")
 
     print("We have %d points." % len(sdf))
     print(sdf.head(5))
@@ -161,7 +150,6 @@ def process_gnis_points(feature_class, datestamp, output_location):
 
     fc = output_location + '/' + 'gnis_ogic_' + datestamp
     sdf.spatial.to_featureclass(fc, sanitize_columns=False)
-    set_aliases(fc, d_aliases)
     print("Wrote %d points to \"%s\"." % (len(sdf), fc))
 
     # Reproject web mercator points to local.
@@ -184,13 +172,172 @@ def process_gnis_points(feature_class, datestamp, output_location):
         out_coor_system=sref, 
         #transform_method='NAD_1983_HARN_To_WGS_1984_2'
     )
-    set_aliases(local_fc, d_aliases)
 
     return local_fc
+
+def fix_category(row):
+    # Change some categories
+    d_cat = {
+        'City Park':  'Park',
+        'State Park': 'Park',
+        'Wayside':    'Park',
+
+        'Bar':      'Water',
+        'Basin':    'Water',
+        'Bay':      'Water',
+        'Channel':  'Water',
+        'Falls':    'Water',
+        'Lake':     'Water',
+        'Rapids':   'Water',
+        'Reservoir':'Water',
+        'Spring':   'Water',
+        'Stream':   'Water',
+        'Swamp':    'Water',
+
+        'Census': 'Populated Place',
+        'Civil':  'Populated Place',
+
+        'Christian': 'Church',
+
+#        'Post Office' : 'Government',
+
+        'Public School': 'School', 
+        'Pre-School/Kinder': 'School', 
+        'Private School': 'School', 
+        'Public School': 'School', 
+        
+        'Deer': 'Wildlife Refuge',
+        'Elk': 'Wildlife Refuge',
+    }
+    for k,v in d_cat.items():
+        # select and change them
+        if row['category'] == k: row['category'] = v
+
+    if 'County Park' in row['name']:
+        row['category'] = 'Park'
+        row['subcategory'] = 'County Park'
+    elif 'State Park' in row['name']:
+        row['category'] = 'Park'
+        row['subcategory'] = 'State Park'
+    elif 'Boat Ramp' in row['name'] or 'Boat Access' in row['name']:
+        row['category'] = 'Boat Ramp'
+        row['subcategory'] = ''
+    elif 'Church' in row['name']:
+        row['category'] = 'Boat Ramp'
+        row['subcategory'] = ''
+    elif 'City Hall' in row['name']:
+        row['category'] = 'Building'
+        row['subcategory'] = 'City Hall'
+    elif 'Library' in row['name']:
+        row['category'] = 'Building'
+        row['subcategory'] = 'Library'
+    elif 'Lighthouse' in row['name']:
+        row['category'] = 'Building'
+        row['subcategory'] = 'Lighthouse'
+    elif 'Golf' in row['name'] or  'Country Club' in row['name']:
+        row['category'] = 'Golf'
+        row['subcategory'] = ''
+    elif 'Police' in row['name']:
+        row['category'] = 'Police'
+        row['subcategory'] = ''
+    elif 'Fire' in row['name'] or 'Station' in row['name']:
+        row['category'] = 'Fire Station'
+        row['subcategory'] = ''
+
+    if row['category'] == 'Library': 
+        row['operator'] = row['subcategory']
+        row['subcategory'] = ''
+    elif row['category'] == 'Post Office': 
+        row['category'] = 'Building'
+        row['subcategory'] = 'Post Office'
+    elif row['category'] == 'Beach':
+        row['category'] = 'Park'
+        row['subcategory'] = 'Beach'
+    elif row['category'] == 'Campground':
+        row['category'] = 'Park'
+        row['subcategory'] = 'Campground'
+    elif row['category'] == 'Lighthouse':
+        row['category'] = 'Building'
+        row['subcategory'] = 'Lighthouse'
+    elif row['category'] == 'Public Building':
+        row['category'] = 'Building'
+        row['subcategory'] = ''
+    elif row['category'] == 'View' or row['category'] == 'Photo View':
+        row['category'] = 'Viewpoint'
+        row['subcategory'] = ''
+    elif row['category'] == 'Reserve':
+        row['category'] = 'Wildlife Refuge'
+        row['subcategory'] = ''
+    elif row['category'] == 'Bird' and row['subcategory'] == 'Federal':
+        row['category'] = 'Wildlife Refuge'
+    elif row['category'] == 'Wreck':
+        row['category'] = 'Shipwreck'
+        row['subcategory'] = ''
+
+    # A subcategory cannot be in more than one categpry,
+    # this is why all these rules are here.
+    if row['subcategory'] == 'Astoria' or row['subcategory'] == 'Ast Park':
+        row['locale'] = 'Astoria'
+        row['subcategory'] = ''
+    elif row['subcategory'] == 'ASTPolice':
+        row['operator'] = 'City of Astoria'
+        row['subcategory'] = ''
+    elif row['subcategory'] == 'Oregon':
+        row['operator'] = 'State of Oregon'
+        row['subcategory'] = ''
+    elif row['subcategory'] == 'CB':
+        row['locale'] = 'Cannon Beach'
+        row['subcategory'] = ''
+    elif row['subcategory'] == 'Camp Rilea':
+        row['locale'] = 'Camp Rilea'
+        row['subcategory'] = ''
+    elif row['subcategory'] == 'CCPark': 
+        row['operator'] = 'Clatsop County Park'
+        row['subcategory'] = ''
+    elif row['subcategory'] == 'Federal': 
+        row['operator'] = 'Federal'
+        row['subcategory'] = ''
+    elif row['subcategory'] == 'NATPark':
+        row['operator'] = 'National Park Service'
+        row['subcategory'] = ''
+    elif row['subcategory'] == 'Seaside': 
+        row['operator'] = 'City of Seaside'
+        row['subcategory'] = ''
+    elif row['subcategory'] == 'WAPark': 
+        row['operator'] = 'Washington State'
+        row['subcategory'] = ''
+    elif row['subcategory'] == 'Warrenton': 
+        row['locale'] = 'Warrenton'
+        row['subcategory'] = ''
+    elif row['subcategory'] == 'Wauna': 
+        row['locale'] = 'Wauna'
+        row['subcategory'] = ''
+    elif row['subcategory'] == 'Westport': 
+        row['locale'] = 'Westport'
+        row['subcategory'] = ''
+    elif row['subcategory'] == 'County': 
+        row['operator'] = 'Clatsop County'
+        row['subcategory'] = ''
+    elif row['subcategory'] == 'Gearhart': 
+        row['locale'] = 'Gearhart'
+        row['operator'] = 'Gearhart'
+        row['subcategory'] = ''
+    elif row['subcategory'] == 'Jewell': 
+        row['locale'] = 'Jewell'
+        row['subcategory'] = ''
+    elif row['subcategory'] == 'Military': 
+        row['subcategory'] = row['category']
+        row['category'] = 'Military'
+
+    if row['category'] == row['subcategory']:
+        row['subcategory'] = ''
+
+    return row
 
 # ----------------------------------------------------------------------------------------------
 if __name__ == '__main__':
 
+    egdb = 'C:/Users/bwilson/AppData/Roaming/Esri/ArcGISPro/Favorites/Clatsop_WinAuth.sde'
     fgdb = "K:/e911/e911.gdb"
     datestamp = datetime.now().strftime("%Y%m%d_%H%M")
 
@@ -203,19 +350,60 @@ if __name__ == '__main__':
 
     pd.set_option('display.max_columns', None)
 
-    poi_fc = process_cc_poi(cc_points, datestamp, fgdb)
-    gnis_fc = process_gnis_points(gnis_points, datestamp, fgdb)
-
+    places = fgdb + '/' + 'places_20210503_1507'
+    if arcpy.Exists(places):
+        sdf = GeoAccessor.from_featureclass(places)
+    else:
+        poi_fc = process_cc_poi(cc_points, datestamp, fgdb)
+        gnis_fc = process_gnis_points(gnis_points, datestamp, fgdb)
     # Cat them together
+        df1 = GeoAccessor.from_featureclass(poi_fc)
+        df2 = GeoAccessor.from_featureclass(gnis_fc)
+        sdf  = pd.concat([df1, df2])
 
-    df1 = GeoAccessor.from_featureclass(poi_fc)
-    df2 = GeoAccessor.from_featureclass(gnis_fc)
+    places = fgdb + '/' + 'places_' + datestamp
 
-    fc = fgdb + '/' + 'points_combined_' + datestamp
-    df  = pd.concat(df1, df2)
-    # FIXME -- Add a locality, quad or city or something, to make for better Locator results
-    df.to_featureclass(fc, sanitize_columns = False)
+    # Clean!
 
+    # Add city as an attribute, to make for better Locator results
+    # for example, there is more than one "City Park". Where are they?
+    cities = egdb + '/' + 'Clatsop.DBO.cities'
+    cities_df = GeoAccessor.from_featureclass(cities)[['City', 'SHAPE']]
+    cities_df.rename(columns={'City':'locale'}, inplace=True)
+    sdf = sdf.spatial.join(cities_df, how='left', op='intersects')
+
+    # Fix up a few category names, like "Christian" should be "Church"
+    sdf = sdf.apply(fix_category, axis=1)
+
+    # Add missing fields
+    sdf.loc[:, 'operator'] = '' # eg "Clatsop County Park" or "City of Astoria"
+
+    # Change field order, and dump any columns we don't want by not listing them here.
+    sdf = sdf[['name',
+        'category', 'subcategory', 
+        'operator',
+        'locale', # Using city but could be an area eg Camp Rilea or Knappa or a park?
+        'ELEV_IN_FT', 'Elevation_Source', # I care about this because of summits.
+        'source', 
+        'FEATURE_ID', 
+        'created_user', 'created_date', 'last_edited_user', 'last_edited_date', 
+        'SHAPE'
+    ]]  
+    sdf.spatial.to_featureclass(places, sanitize_columns = False)
+
+    # Create aliases
+    # The original column names are left untouched,
+    # but I assign more readable aliases here.
+    # NB some of these names are chosen to match up with the Esri point_address locator.
+    # NB It turns out assigning some them in the locator makes the locator results icky.
+    d_aliases = { 
+        'FEATURE_ID' : 'id', 
+        'ELEV_IN_FT' : 'elevation', 
+        #'MAP_NAME': 'quad name',
+        'Elevation_Source': 'elevation source'
+    }
+    set_aliases(places, d_aliases)
+    print("Wrote %d points to \"%s\"" % (len(sdf), places))
     print("..and we're done!")
 
 # That's all!
