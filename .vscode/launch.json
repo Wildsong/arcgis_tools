@@ -13,7 +13,8 @@
             "env": {
                 "PYTHONPATH": "${workspaceFolder}"
             },
-            "console": "internalConsole"
+            "console": "internalConsole",
+            "justMyCode": false
         }
     ]
 }

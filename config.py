@@ -2,9 +2,14 @@ import os
 
 class Config(object):
 
-    PORTAL_URL = "https://delta.co.clatsop.or.us/portal"
-    SERVER_URL = "https://delta.co.clatsop.or.us/server"
+    ARCGIS_URL = os.environ.get('ARCGIS_URL')
+    ARCGIS_USER = os.environ.get("ARCGIS_USER")
+    ARCGIS_PASSWORD = os.environ.get("ARCGIS_PASSWORD")
+
+    ARCGIS_ID = os.environ.get("ARCGIS_ID")
+    ARCGIS_SECRET = os.environ.get("ARCGIS_SECRET")
+
+
+
     
-    PORTAL_USER = os.environ.get("PORTAL_USER")
-    PORTAL_PASSWORD = os.environ.get("PORTAL_PASSWORD")
 

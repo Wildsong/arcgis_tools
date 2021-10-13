@@ -1,5 +1,5 @@
 """
-This script cleans and copies GNIS data into feature classes.
+This script cleans and copies OR GNIS and point_of_interest data into feature classes.
 
 Output will be 
 * points of interest for Clatsop County
@@ -25,9 +25,16 @@ def set_aliases(fc, d):
     return
 
 
-def process_cc_poi(feature_class, datestamp, output_location):
+def process_cc_poi(input_fc, output_fc):
+    """ Take the old points_of_interest feature class as input.
+        Clean it.
+        Write a feature class in local projection.
+
+        Returns the name of the feature class.
+
+        Uses the workspace as the output location. """
     # For some reason the CC poi data was stored in Web Mercator.
-    sdf = GeoAccessor.from_featureclass(feature_class)
+    sdf = GeoAccessor.from_featureclass(input_fc)
     
     print(sdf.head(5))
     print("Rows:", len(sdf))
@@ -74,27 +81,33 @@ def process_cc_poi(feature_class, datestamp, output_location):
     print(sdf.columns)
     print(sdf.dtypes)
 
-    wm_fc = output_location + '/' + 'poi_wm_' + datestamp
+    wm_fc = output_fc + '_wm'
     sdf.spatial.to_featureclass(wm_fc, sanitize_columns=False)
     print("Wrote %d points to \"%s\"." % (len(sdf), wm_fc))
 
-    local_fc = output_location + '/poi_local_' + datestamp
     sref = """PROJCS['NAD_1983_HARN_StatePlane_Oregon_North_FIPS_3601_Feet_Intl',GEOGCS['GCS_North_American_1983_HARN',DATUM['D_North_American_1983_HARN',SPHEROID['GRS_1980',6378137.0,298.257222101]],PRIMEM['Greenwich',0.0],UNIT['Degree',0.0174532925199433]],PROJECTION['Lambert_Conformal_Conic'],PARAMETER['False_Easting',8202099.737532808],PARAMETER['False_Northing',0.0],PARAMETER['Central_Meridian',-120.5],PARAMETER['Standard_Parallel_1',44.33333333333334],PARAMETER['Standard_Parallel_2',46.0],PARAMETER['Latitude_Of_Origin',43.66666666666666],UNIT['Foot',0.3048]]", transform_method=["NAD_1983_HARN_To_WGS_1984_2"], in_coor_system="GEOGCS['GCS_WGS_1984',DATUM['D_WGS_1984',SPHEROID['WGS_1984',6378137.0,298.257223563]],PRIMEM['Greenwich',0.0],UNIT['Degree',0.0174532925199433]]"""
-    print("Reprojecting to \"%s\"." % local_fc)
+    print("Reprojecting to \"%s\"." % output_fc)
     #https://pro.arcgis.com/en/pro-app/latest/tool-reference/data-management/project.htm
-    arcpy.management.Project(wm_fc, local_fc,
+    arcpy.management.Project(wm_fc, output_fc,
         out_coor_system=sref, 
         #transform_method='NAD_1983_HARN_To_WGS_1984_2'
     )
 
-    return local_fc
+    return output_fc
 
 
-def process_gnis_points(feature_class, datestamp, output_location):
+def process_gnis_points(input_fc, output_fc):
+    """ Take a GNIS feature class as input.
+        Clean it.
+        Write a feature class in local projection.
+
+        Returns the name of the feature class.
+
+        Uses the workspace as the output location. """
     # State GNIS data arrives in OGIC projection
 
     # Filter on Clatsop County
-    or_df = GeoAccessor.from_featureclass(feature_class)
+    or_df = GeoAccessor.from_featureclass(input_fc)
     sdf = or_df[or_df.COUNTY_NAME == "Clatsop"]
 
     #https://pro.arcgis.com/en/pro-app/latest/arcpy/classes/spatialreference.htm
@@ -148,13 +161,11 @@ def process_gnis_points(feature_class, datestamp, output_location):
     print(sdf.columns)
     print(sdf.dtypes)
 
-    fc = output_location + '/' + 'gnis_ogic_' + datestamp
+    fc = output_fc + '_ogic'
     sdf.spatial.to_featureclass(fc, sanitize_columns=False)
     print("Wrote %d points to \"%s\"." % (len(sdf), fc))
 
     # Reproject web mercator points to local.
-
-    local_fc = output_location + '/' + 'gnis_local_' + datestamp
 
     # THIS METHOD DOES NOT WORK -- it spins forever
     # if you remove the transform it works but generates bad data
@@ -166,16 +177,18 @@ def process_gnis_points(feature_class, datestamp, output_location):
     # Using a transform string just seems to cause the process to lock up
     # and this sref string apparently includes the transform.
     sref = """PROJCS['NAD_1983_HARN_StatePlane_Oregon_North_FIPS_3601_Feet_Intl',GEOGCS['GCS_North_American_1983_HARN',DATUM['D_North_American_1983_HARN',SPHEROID['GRS_1980',6378137.0,298.257222101]],PRIMEM['Greenwich',0.0],UNIT['Degree',0.0174532925199433]],PROJECTION['Lambert_Conformal_Conic'],PARAMETER['False_Easting',8202099.737532808],PARAMETER['False_Northing',0.0],PARAMETER['Central_Meridian',-120.5],PARAMETER['Standard_Parallel_1',44.33333333333334],PARAMETER['Standard_Parallel_2',46.0],PARAMETER['Latitude_Of_Origin',43.66666666666666],UNIT['Foot',0.3048]]", transform_method=["NAD_1983_HARN_To_WGS_1984_2"], in_coor_system="GEOGCS['GCS_WGS_1984',DATUM['D_WGS_1984',SPHEROID['WGS_1984',6378137.0,298.257223563]],PRIMEM['Greenwich',0.0],UNIT['Degree',0.0174532925199433]]"""
-    print("Reprojecting to \"%s\"." % local_fc)
+    print("Reprojecting to \"%s\"." % output_fc)
     #https://pro.arcgis.com/en/pro-app/latest/tool-reference/data-management/project.htm
-    arcpy.management.Project(fc, local_fc,
+    arcpy.management.Project(fc, output_fc,
         out_coor_system=sref, 
         #transform_method='NAD_1983_HARN_To_WGS_1984_2'
     )
 
-    return local_fc
+    return output_fc
 
 def fix_category(row):
+    """ Used with DF "apply" method to fix one row. """
+    
     # Change some categories
     d_cat = {
         'City Park':  'Park',
@@ -223,7 +236,7 @@ def fix_category(row):
         row['category'] = 'Boat Ramp'
         row['subcategory'] = ''
     elif 'Church' in row['name']:
-        row['category'] = 'Boat Ramp'
+        row['category'] = 'Church'
         row['subcategory'] = ''
     elif 'City Hall' in row['name']:
         row['category'] = 'Building'
@@ -240,10 +253,20 @@ def fix_category(row):
     elif 'Police' in row['name']:
         row['category'] = 'Police'
         row['subcategory'] = ''
-    elif 'Fire' in row['name'] or 'Station' in row['name']:
+    elif 'Coast Guard' in row['name'] or 'Air Station' in row['name'] or 'Navy' in row['name']: 
+        # This rule covers not setting "Coast Guard Station" to "Fire Station"
+        row['category'] = 'Military'
+        row['subcategory'] = ''
+    elif 'Power Station' in row['name']: 
+        # This rule covers not setting "Bonneville Power Station" to "Fire Station"
+        row['category'] = 'Utility'
+        row['subcategory'] = ''
+# There were too many false positives on "Station", like "Delmoor Station"
+# I tried to match on 'Fire' but it grabbed fire districts too.
+    elif (row['category'] == 'Locale') and ('Fire Station' in row['name']):
         row['category'] = 'Fire Station'
         row['subcategory'] = ''
-
+        
     if row['category'] == 'Library': 
         row['operator'] = row['subcategory']
         row['subcategory'] = ''
@@ -340,9 +363,12 @@ if __name__ == '__main__':
     egdb = 'C:/Users/bwilson/AppData/Roaming/Esri/ArcGISPro/Favorites/Clatsop_WinAuth.sde'
     fgdb = "K:/e911/e911.gdb"
     datestamp = datetime.now().strftime("%Y%m%d_%H%M")
+    suffix = '' # '_' + datestamp
+
+    poi_name = "points_of_interest"
 
     # Input data
-    cc_points = fgdb + "/" + "points_of_interest"
+    cc_points = egdb + "/" + 'Clatsop.DBO.' + poi_name + '_OLD'
     assert arcpy.Exists(cc_points)
 
     gnis_points = "K:/State Data/GNIS_2014/GNIS_OR.gdb/GNIS_OR.gdb/GNIS_OR_Buffer"
@@ -350,22 +376,25 @@ if __name__ == '__main__':
 
     pd.set_option('display.max_columns', None)
 
-    places = fgdb + '/' + 'places_20210503_1507'
-    if arcpy.Exists(places):
-        sdf = GeoAccessor.from_featureclass(places)
+    # Insert the name of the existing POI fc including datestamp to speed development
+    current_places = fgdb + '/' + 'poi_name_20210505_1507' # put datestamp here from previous run
+    if arcpy.Exists(current_places):
+        sdf = GeoAccessor.from_featureclass(current_places)
     else:
-        poi_fc = process_cc_poi(cc_points, datestamp, fgdb)
-        gnis_fc = process_gnis_points(gnis_points, datestamp, fgdb)
-    # Cat them together
+        poi_fc = fgdb + '/cc_points'
+        process_cc_poi(cc_points, poi_fc)
+        gnis_fc = fgdb + '/gnis_points'
+        process_gnis_points(gnis_points, gnis_fc)
+        # Cat them together
         df1 = GeoAccessor.from_featureclass(poi_fc)
         df2 = GeoAccessor.from_featureclass(gnis_fc)
         sdf  = pd.concat([df1, df2])
 
-    places = fgdb + '/' + 'places_' + datestamp
+    places = fgdb + '/' + poi_name + suffix
 
     # Clean!
 
-    # Add city as an attribute, to make for better Locator results
+    # Add city as an attribute to POIs, to make for better Locator results
     # for example, there is more than one "City Park". Where are they?
     cities = egdb + '/' + 'Clatsop.DBO.cities'
     cities_df = GeoAccessor.from_featureclass(cities)[['City', 'SHAPE']]
