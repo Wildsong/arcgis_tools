@@ -12,8 +12,12 @@ I am trying to live without arcpy right now because conda cannot install it.
 It gripes about the Python version and I can't find the right setting.
 
 ```bash
-conda create --name=arcgis_tools --file=requirements.txt
+conda create --name=arcgis_tools --file=requirements.txt -c esri -c conda-forge
 ```
+
+Notes:
+* The opencv and pillow packages are currently only needed to generate thumbnails.
+* Currently, arcgis and arcpy will force python to be version 3.7.x 
 
 ## Publish new raster tiles
 

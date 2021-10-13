@@ -1,5 +1,5 @@
 """
-    List the apps on this server
+    Create an inventory of content on an ArcGIS Portal
 """
 import os
 
@@ -12,10 +12,7 @@ VERSION = '1.0'
 path,exe = os.path.split(__file__)
 myname = exe + ' ' + VERSION
 
-if __name__ == "__main__":
-
-    gis = GIS(Config.PORTAL_URL, Config.PORTAL_USER, Config.PORTAL_PASSWORD, verify_cert=False)
-
+def get_apps(gis):
     # See arcgis.gis.ContentManager
     # For query definition, refer to http://bitly.com/1fJ8q31
     #q = "title:Clatsop County Template"
@@ -43,7 +40,9 @@ if __name__ == "__main__":
             if not item.type in dtype:
                 dtype[item.type] = {}
             dtype[item.type][item.title] = item
+    return dtype
 
+def generate_html(dtype):
     for itype,items in dtype.items():
         print('<h2>%s</h2>' % itype)
         count = 0
@@ -70,6 +69,13 @@ if __name__ == "__main__":
             print("<hr>")
             print()
 
-#    print(dtype)
+    return
+
+if __name__ == "__main__":
+
+    gis = GIS(Config.PORTAL_URL, Config.PORTAL_USER, Config.PORTAL_PASSWORD)
+    dtype = get_apps(gis)
+    print(dtype)
+    generate_html(dtype)
 
 # That's all!
