@@ -2,10 +2,9 @@
     Create an inventory of content on an ArcGIS Portal
 """
 import os
-
+import json
 from arcgis.gis import GIS
 from arcgis.mapping import WebMap
-#from arcgis.gis import server as SERVER
 from config import Config
 
 VERSION = '1.0'
@@ -28,7 +27,7 @@ def get_apps(items):
     #        if not ('zhunt' in item.owner or "@CLATSOP" in item.owner):
             if not item.type in dtype:
                 dtype[item.type] = {}
-            dtype[item.type][item.title] = item
+            dtype[item.type][item.id] = item
     return dtype
 
 def get_maps(items):
@@ -36,7 +35,7 @@ def get_maps(items):
     for item in items: 
         if not item.type in dtype:
             dtype[item.type] = {}
-        dtype[item.type][item.title] = item
+        dtype[item.type][item.id] = item
     return dtype
 
 def generate_html(dtype):
@@ -44,9 +43,9 @@ def generate_html(dtype):
         print('<h2>%s</h2>' % itype)
         count = 0
         print("<table>")
-        for title in items.keys():
+        for id in items.keys():
             count += 1
-            item = items[title]
+            item = items[id]
 
             url = item.url
             if url:
@@ -65,6 +64,23 @@ def generate_html(dtype):
         print()
 
     return
+
+def repair_map(mapId, oldLayerId, newLayerId):
+    """ Find the old JSON file, read it, create a new repaired one. """
+    content = "C:/arcgis/arcgisportal/content/items"
+    # read existing JSON file
+    mappath = os.path.join(content, mapId)
+    if os.path.exists(mappath):
+        # there should be a JSON file in disguise, named mapId (no extension).
+        mappathname = os.path.join(mappath, mapId)
+        if os.path.exists(mappathnam):
+            # generate new JSON file and replace old ID with new one
+            with open(mappathname, 'r') as fp:
+                content = json.loads(fp)
+                print(content)
+            pass
+            return True
+    return False
 
 if __name__ == "__main__":
 
@@ -118,20 +134,23 @@ if __name__ == "__main__":
     labeled_tiles = '01d7aec6e83e43f190bb543b5860647d'
     baddies = [ unlabeled_tiles, labeled_tiles, labels ]
 
+    dtype = get_maps(list_of_maps)
+    dm = dtype['Web Map']
+
     for layerId in baddies:
         if layerId in layer_dict:
-            print(layerId, "-----> ", layer_dict[layerId])
+            print(layerId, "-----> ")
+            for mapId in layer_dict[layerId]:
+                print(dm[mapId].id, dm[mapId].title)
+                repair_map(mapId, layerId, "NEW LAYER ID")
 
-    dtype = get_maps(list_of_maps)
+#    generate_html(dtype)
+
+#    q = "NOT owner:esri_apps"
+#    items = gis.content.search(q, outside_org=False, max_items=5000)
+#    print("Items found %d" % len(items))
+#    dtype = get_apps(items)
 #    print(dtype)
-
-    generate_html(dtype)
-
-    q = "NOT owner:esri_apps"
-    items = gis.content.search(q, outside_org=False, max_items=5000)
-    print("Items found %d" % len(items))
-    dtype = get_apps(items)
-#    print(dtype)
-    generate_html(dtype)
+#    generate_html(dtype)
 
 # That's all!
