@@ -48,9 +48,13 @@ if __name__ == "__main__":
 
     print(local2utc(datetime.now()))
 
-    portalUrl = Config.PORTAL_URL
-    portalUser = Config.PORTAL_USER
-    portalPasswd = Config.PORTAL_PASSWORD
+    try:
+        portal = GIS(Config.PORTAL_URL, Config.PORTAL_USER, Config.PORTAL_PASSWORD)
+        #print("Logged in as " + str(portal.properties.user.username))
+    except Exception as e:
+        print("Could not connect to portal. \"%s\"" % e)
+        print("Make sure the environment variables are set correctly.")
+        exit(-1)
 
     layers = [
         Config.COVID_CASES_URL,
@@ -58,14 +62,6 @@ if __name__ == "__main__":
         Config.HOSCAP_URL,
         Config.PPE_URL,
     ]
-
-    try:
-        portal = GIS(portalUrl, portalUser, portalPasswd)
-        #print("Logged in as " + str(portal.properties.user.username))
-    except Exception as e:
-        print("Could not connect to portal. \"%s\"" % e)
-        print("Make sure the environment variables are set correctly.")
-        exit(-1)
 
     for url in layers:
         try:

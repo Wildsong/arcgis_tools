@@ -14,7 +14,7 @@
                 "PYTHONPATH": "${workspaceFolder}"
             },
             "console": "internalConsole",
-            "justMyCode": false
+            "justMyCode": true
         }
     ]
 }
