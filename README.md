@@ -25,7 +25,7 @@ Notes:
 Optionally, install these:
 
 ```bash
-conda install -n arcgis_tools -c esri arcpy
+conda install -n arcgis_tools -c esri python arcpy
 conda install -n arcgis_tools opencv pillow
 ```
 
