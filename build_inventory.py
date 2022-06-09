@@ -70,8 +70,8 @@ def inventory_services() -> list:
     sd = ServicesDirectory(url=Config.SERVER_URL, username=Config.PORTAL_USER, password=Config.PORTAL_PASSWORD)
     print("Server folders:", sd.folders)
 
-    # This takes 16 seconds in notebook and an infinite time here.
-    return sd.list(folder='Hosted')
+    # This takes 16 seconds in Jupyter Notebook and infinite time here.
+    return sd.list()
  
 
 def inventory_maps(gis, query=''):
