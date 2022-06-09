@@ -9,12 +9,19 @@
             "type": "python",
             "request": "launch",
             "program": "${file}",
-            "envFile": "${workspaceFolder}/.env",
-            "env": {
-                "PYTHONPATH": "${workspaceFolder}"
-            },
             "console": "internalConsole",
+            "envFile": "${workspaceFolder}/.env",
             "justMyCode": true
+        },
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Launch Chrome against localhost",
+            "url": "http://localhost:1234",
+            "webRoot": "${workspaceFolder}",
+            "sourceMapPathOverrides": {
+                "../*": "${webRoot}/*"
+            }
         }
     ]
 }

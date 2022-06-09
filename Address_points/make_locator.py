@@ -1,6 +1,7 @@
 """
 Creates a locator
 """
+import os
 import arcpy
 from arcgis.geometry import Geometry, Point
 from arcgis.features import GeoAccessor, Table
@@ -10,11 +11,11 @@ from pandas.core.frame import DataFrame
 from config import Config
 
 def create_locator(addresses, roads, poi, parcels, locator_file):
-    data_list = [
+    data_list = [ # layer, name in locator service
         [addresses, "PointAddress"],
         [parcels, "Parcel"],
         [poi, 'POI'],
-        #[roads, "StreetAddress"],
+        [roads, "StreetAddress"],
     ]
     
     address_field_map = [
@@ -40,7 +41,7 @@ def create_locator(addresses, roads, poi, parcels, locator_file):
         # Use a Place Join ID field here to join to an alternative name table
     ]
     street_field_map = [
-        'StreetAddress.HOUSE_NUMBER_FROM_LEFT ' + roads + '.FromLeft', 
+        'StreetAddress.LEFT_HOUSE_NUMBER_FROM ' + roads + '.FromLeft', 
         'StreetAddress.HOUSE_NUMBER_TO_LEFT ' + roads + '.ToLeft', 
         'StreetAddress.HOUSE_NUMBER_FROM_RIGHT ' + roads + '.FromRight', 
         'StreetAddress.HOUSE_NUMBER_TO_RIGHT ' + roads + '.ToRight', 
@@ -55,7 +56,7 @@ def create_locator(addresses, roads, poi, parcels, locator_file):
     ]
 
     field_map = address_field_map + parcel_field_map + poi_field_map + street_field_map
-    field_map = address_field_map + parcel_field_map + poi_field_map
+    #field_map = address_field_map + parcel_field_map + poi_field_map
 
     msg = "Created locator \"%s\"." % locator_file
     if arcpy.Exists(locator_file):
@@ -80,18 +81,24 @@ if __name__ == "__main__":
 
     #egdb = 'C:/Users/bwilson/AppData/Roaming/Esri/ArcGISPro/Favorites/Clatsop_WinAuth.sde'
     egdb = 'K:/webmaps/basemap/cc-gis.sde'
+    assert os.path.exists(egdb)
     fgdb = "K:/e911/e911.gdb"
+    assert os.path.exists(fgdb)
+
     datestamp = datetime.now().strftime("%Y%m%d_%H%M")
     suffix = '' # '_' + datestamp # for debug and development
 
     locator_file = "k:\\e911\\clatsop_county" + suffix
 
-    with arcpy.EnvManager(workspace=egdb):
+    with arcpy.EnvManager(workspace=fgdb):
         # These feature classes have to be in the Enterprise GDB
         # so that I can publish the locator in Portal
         # They are accessed read-only
+        #
+        # Wait, doesn't it always copy all the data into a table anyway??
+        #
         addresses = "address_points"
-        roads = "DBO.roads"
+        roads = "roads"
         poi = 'points_of_interest'
         parcels = 'taxlot_accounts'
 

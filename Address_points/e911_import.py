@@ -9,6 +9,7 @@ For each service, generate
 1. a feature class in local projection in the EGDB
 2. a hosted feature layer in Delta. 
 """
+import os
 import arcpy
 from arcgis.geometry import Geometry, Point
 from arcgis.features import GeoAccessor, Table
@@ -161,9 +162,13 @@ def process_address_points(input_fc, output_fc):
  #   print(sdf.dtypes)
  #   print(sdf.head(4))
 
-    output_wm = output_fc + '_wm'
+    f,e = os.path.splitext(output_fc)
+    output_wm = f + '_wm' + e
     sdf.spatial.to_featureclass(output_wm, sanitize_columns=False)
-    set_aliases(output_wm, d_aliases)
+    try:
+        set_aliases(output_wm, d_aliases)
+    except Exception as e:
+        print("Could not set field aliases;", e)
     print("Wrote %d points to \"%s\"." % (len(sdf), output_wm))
 
     # Reproject web mercator points to local.
@@ -184,8 +189,10 @@ def process_address_points(input_fc, output_fc):
         out_coor_system=sref, 
         #transform_method='NAD_1983_HARN_To_WGS_1984_2'
     )
-    set_aliases(output_fc, d_aliases)
-
+    try:
+        set_aliases(output_fc, d_aliases)
+    except Exception as e:
+        print("Could not set field aliases;", e)
 
 def process_hydrants(input_fc, output_fc):
     # NOTE, Geocomm data arrives in Web Mercator.
@@ -235,9 +242,13 @@ def process_hydrants(input_fc, output_fc):
     print(sdf.columns)
     print(sdf.dtypes)
 
-    wm_fc = output_fc + '_wm'
+    f, e = os.path.splitext(output_fc)
+    wm_fc = f + '_wm' + e
     sdf.spatial.to_featureclass(wm_fc, sanitize_columns=False)
-    set_aliases(wm_fc, d_aliases)
+    try:
+        set_aliases(wm_fc, d_aliases)
+    except Exception as e:
+        print("Could not set field aliases;", e)
     print("Wrote %d points to \"%s\"." % (len(sdf), wm_fc))
 
     # Reproject web mercator points to local.
@@ -258,8 +269,10 @@ def process_hydrants(input_fc, output_fc):
         out_coor_system=sref, 
         #transform_method='NAD_1983_HARN_To_WGS_1984_2'
     )
-
-    set_aliases(output_fc, d_aliases)
+    try:
+        set_aliases(output_fc, d_aliases)
+    except Exception as e:
+        print("Could not set field aliases;", e)
 
 # ----------------------------------------------------------------------------------------
 if __name__ == '__main__':
@@ -288,14 +301,13 @@ if __name__ == '__main__':
     output_addresses = fgdb + '/' + 'address_points' + suffix 
     output_hydrants  = fgdb + '/' + 'hydrants' + suffix
 
-    try:
-        process_address_points(geocomm_address_points, output_addresses)
-    except Exception as e:
-        print("Could not process addresses, \"%s\"." % e)
-    try:
-        process_hydrants(geocomm_hydrants, output_hydrants)
-    except Exception as e:
-        print("Could not process hydrants, \"%s\"." % e)
+    # Uncomment to test output to shapefiles
+    #output_addresses = 'c:/TEMP/' + 'address_points' + suffix + '.shp' 
+    #output_hydrants = 'c:/TEMP/' + 'hydrants' + suffix + '.shp'
+
+    process_address_points(geocomm_address_points, output_addresses)
+    process_hydrants(geocomm_hydrants, output_hydrants)
+
     print("..and we're done!")
 
 # That's all!

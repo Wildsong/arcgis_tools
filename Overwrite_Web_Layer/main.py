@@ -7,18 +7,13 @@ from arcgis.gis import GIS
 from config import Config
 
 # Read
-#    https://proceedings.esri.com/library/userconf/proc18/tech-workshops/tw_4535-433.pdf
+# https://pro.arcgis.com/en/pro-app/latest/arcpy/sharing/introduction-to-arcpy-sharing.htm
 
-
-
-prjPath  = "K:/webmaps/Basemap_PRO/basemap_pro.aprx"
-ags_file = "K:/webmaps/Basemap_PRO/server (publisher).ags"
+prjPath = "K:/webmaps/basemap/basemap.aprx"
 
 """
 # Normally we'd use these...
 title = "Clatsop County"
-sdname = 'Clatsop_County'
-webmap_name = 'Test map for Clatsop County data'
 # Set sharing options
 shrOrg = True
 shrEveryone = True
@@ -27,8 +22,9 @@ shrGroups = "CC Gallery"
 
 # ...but when testing we don't want to break things
 # also we want a small test data set!
-title = 'Astoria Shively McClure District'
-service_name = 'Astoria_Shively_McClure_District'
+webmap_name = 'Test map for Clatsop County data'
+title = 'Map for testing scripts, do not delete.'
+service_name = 'TEST_fc'
 # Set sharing options
 shrOrg = False
 shrEveryone = False
@@ -40,57 +36,52 @@ folder = "TESTING_Brian"
 #tmpPath, name = os.path.split(prjPath)
 tmpPath = 'C:/temp'
 
-def create_service_definition(aprx_map, sdname, folder=""):
+def create_sd_file(aprx_map, sd_file, folder=""):
     """ 
         Using a map from ArcGIS Pro project, 
-        create a new SDDraft
-        use the draft to create a new SD file.
+        create a new SDDraft file
+        use the SDDraft file to create a new SD file.
 
         Input:  aprx_map is a map object from an APRX project
-                sdname is the service definition name
+                sd_file is the service definition name
                 folder (optional) destination folder on the server
         Output: files: a service draft and a service definition
 
-        Returns: complete path for SD file or None
+        Returns: True or False
     """
-    path, name = os.path.split(sdname)
+    path, name = os.path.split(sd_file)
     service_name, ext = os.path.splitext(name)
-    sddraft = os.path.join(path, service_name + ".sddraft")
+    sddraft_filename = os.path.join(path, service_name + ".sddraft")
 
     arcpy.env.overwriteOutput = True
 
-    """Current version."""
-    # This call is ONLY for "STANDALONE_SERVER" (no federation allowed!!!)
-    """sharing_draft = arcpy.sharing.CreateSharingDraft('STANDALONE_SERVER', 'MAP_SERVICE', service_name, aprx_map)
-    sharing_draft.targetServer = ags_file"""
-    
     # You can include a list of layers here, and then you can omit services or add some that aren't in the AGP map.
-    #sharing_draft = aprx_map.getWebLayerSharingDraft('FEDERATED_SERVER', 'MAP_IMAGE', service_name)
-    #sharing_draft.federatedServerUrl = Config.SERVER_URL # required!
+    sddraft = aprx_map.getWebLayerSharingDraft('HOSTING_SERVER', 'FEATURE', service_name)
+    sddraft.federatedServerUrl = Config.SERVER_URL # required!
 
     # FAIL: You can't write a MAP_IMAGE to a HOSTING_SERVER
-    sharing_draft = aprx_map.getWebLayerSharingDraft('HOSTING_SERVER', 'TILE', service_name)
-    sharing_draft.portalUrl = Config.PORTAL_URL # required!
+    #sddraft = aprx_map.getWebLayerSharingDraft('HOSTING_SERVER', 'TILE', service_name)
+    #sddraft.portalUrl = Config.PORTAL_URL # required!
 
     # All these are optiona;
-    sharing_draft.portalFolder = folder
-    sharing_draft.serverFolder = folder
-    sharing_draft.summary = ''
-    sharing_draft.tags = 'TEST'
-    sharing_draft.credits = ''
-    sharing_draft.description = ''
-    sharing_draft.copyDataToServer = True
-    sharing_draft.overwriteExistingService = True
-    #sharing_draft.offline = False
-    #sharing_draft.useLimitations = False
+    sddraft.portalFolder = folder
+    sddraft.serverFolder = folder
+    sddraft.summary = ''
+    sddraft.tags = 'TEST'
+    sddraft.credits = ''
+    sddraft.description = ''
+    sddraft.copyDataToServer = True
+    sddraft.overwriteExistingService = True
+    #sddraft.offline = False
+    #sddraft.useLimitations = False
 
     # In theory this writes the XML file we're looking for.
-    sharing_draft.exportToSDDraft(sddraft)
+    sddraft.exportToSDDraft(sddraft_filename)
 
     """deprecated version
     try:
-        print("Creating draft in \"%s\"." % sddraft)
-        arcpy.mp.CreateWebLayerSDDraft(aprx_map, sddraft, service_name, 
+        print("Creating draft in \"%s\"." % sddraft_filename)
+        arcpy.mp.CreateWebLayerSDDraft(aprx_map, sddraft_filename, service_name, 
             server_type='HOSTING_SERVER', service_type="MAP_SERVICE", folder_name=folder, 
             overwrite_existing_service=True, copy_data_to_server=True, allow_exporting=False, 
             summary=title, tags="TEST", description="TEST",credits="")
@@ -99,27 +90,18 @@ def create_service_definition(aprx_map, sdname, folder=""):
     # Can I do an "Analyze" step here??
 
     try:
-        print("Converting XML sddraft to sdfile \"%s\"." % sdname)
-        arcpy.StageService_server(sddraft, sdname)
+        print("Converting XML sddraft to sdfile \"%s\"." % sd_file)
+        arcpy.StageService_server(sddraft_filename, sd_file)
     except Exception as e:
         print("Staging failed:", e)
         return False
 
     return True
 
-def update_service_definition(gis, sd, service_name):
-
-    print("Searching for original SD \"%s\" on portal…" % service_name)
-    query = "{} AND owner:{}".format(service_name, Config.PORTAL_USER)
-    try:
-        sdItem = gis.content.search(query, item_type="Service Definition")[0]
-    except Exception as e:
-        print("Could not find service definition for \"%s\"." % service_name, e)
-        return None
+def update_service_definition(sd_file, sdItem, service_name):
 
     try:
-        print("Found SD: {}, ID: {} Uploading and overwriting…".format(sdItem.title, sdItem.id))
-        sdItem.update(data=sd)
+        sdItem.update(data=sd_file)
     except Exception as e:
         print("Could not update service definition.", e)
         return None
@@ -128,7 +110,7 @@ def update_service_definition(gis, sd, service_name):
         print("Overwriting service…")
         fs = sdItem.publish(overwrite=True)
     except Exception as e:
-        print("Could not overwrite \"%s\"." % sdname, e)
+        print("Could not overwrite.", e)
         return None
 
     try:
@@ -181,40 +163,48 @@ if __name__ == '__main__':
         sys.exit("No map \"%s\" found in %s" % (title, prjPath))
 
     overwrite = False # Faster debugging of publish step...
-    overwrite = True # Force creation of a new SD file
-    sdname = os.path.join(tmpPath, service_name + ".sd")
-    if overwrite or not os.path.exists(sdname):
-        assert create_service_definition(map, sdname, folder)
-
+    #overwrite = True # Force creation of a new SD file
+    sd_file = os.path.join(tmpPath, service_name + ".sd")
+    if overwrite or not os.path.exists(sd_file):
+        assert create_sd_file(map, sd_file, folder)
     
     # First I try to update an existing definition.
     # If that fails then I create a new one...
 
     gis = GIS(Config.PORTAL_URL, Config.PORTAL_USER, Config.PORTAL_PASSWORD)
-    if update_service_definition(gis, sdname, service_name):
-        print("Service definition has been updated.")
 
-    else:
-        print("Uploading definition using \"%s\" %s" % (ags_file, folder))
+    print("Searching for an existing SD \"%s\" on portal…" % service_name)
+    query = "{} AND owner:{}".format(service_name, Config.PORTAL_USER)
+    try:
+        sdItem = gis.content.search(query, item_type="Service Definition")[0]
+        print("Found SD: {}, ID: {} Uploading and overwriting…".format(
+            sdItem.title, sdItem.id))
+        if update_service_definition(sd_file, sdItem, service_name):
+            print("Service definition has been updated.")
+    except Exception as e:
+        print("Service does not exist, attempting to create it.", e)
+        sdItem = None
+
+    if not sdItem:
+        print("Uploading new definition.")
 
         # Upload the service definition to SERVER 
         # In theory everything needed to publish the service is already in the SD file.
         # https://pro.arcgis.com/en/pro-app/latest/tool-reference/server/upload-service-definition.htm
         # You can override permissions, ownership, groups here too.
         try:
-            # In theory ags_file could be Config.SERVER_URL but then where does it get authenticated?
-            # arcpy.server.UploadServiceDefinition(sdname, ags_file, in_startupType="STARTED")
-            # in_startupType HAS TO BE "STARTED" else no service is started on the SERVER.
-
             rval = arcpy.SignInToPortal(Config.PORTAL_URL, Config.PORTAL_USER, Config.PORTAL_PASSWORD)
-            rval = arcpy.server.UploadServiceDefinition(sdname, Config.SERVER_URL, in_startupType="STARTED")
+            rval = arcpy.server.UploadServiceDefinition(in_sd_file=sd_file, in_server="My Hosted Services", in_startupType="STARTED")
         except Exception as e:
             print("Upload failed.", e)
+
+# Test by trying to grab a tile from the service.
 
     service = Config.SERVER_URL + '/rest/services/' 
     if folder:
         service += folder + "/"
     service += service_name + '/MapServer'
     print("Map Image published successfully - ", service)
+
 
     fetch_tile(service, "C:/temp/output.png")
