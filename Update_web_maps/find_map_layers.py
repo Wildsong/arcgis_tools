@@ -1,5 +1,5 @@
 #
-#  Grep through our server finding maps and then look for maps that have layers we're interested in.
+#  Search our server finding maps and then look for maps that have layers we're interested in.
 #
 import os
 from collections import defaultdict
@@ -17,12 +17,25 @@ VERSION = '1.0'
 path,exe = os.path.split(__file__)
 myname = exe + ' ' + VERSION
 
+def search_map_for_photoshow(map_id):
+    content="//CC-GIS/C$/arcgis/arcgisportal/content/items"
+    path = os.path.join(content, map_id, map_id) # File and folder, same name!
+    if os.path.exists(path):
+        with open(path, "r") as fp:
+            text = fp.read()
+        #print(text)
+        if "photoshow" in text:
+            print("We got one.", map_id)
+            return
+    else:
+        print(f"ERROR: No content file called \"{id}\" exists.")
+    return
 
 
-def find_interesting_maps(gis, q="", interesting_layer_title=None, interesting_layer_id=None) -> list:
+def find_interesting_maps(gis, q="", interesting_layer_titles=list(), interesting_layer_id=None) -> list:
     """
         Search for all maps matching a query
-        and optionally with a layer matching the 'interesting_layer_title' or 'interesting_layer_id'.
+        and optionally with a layer matching one of the 'interesting_layer_titles' or 'interesting_layer_id'.
         Return a list of the maps.
     """
     # There should never be >500 maps on this server,
@@ -43,7 +56,7 @@ def find_interesting_maps(gis, q="", interesting_layer_title=None, interesting_l
     for map in maps:
         thismap += 1 
         print("Examining %d of %d \"%s\"" % (thismap, totalmaps, map.title))
-        
+
         try:
             web_map = WEBMAP(map)
         except Exception as e:
@@ -116,7 +129,7 @@ def find_interesting_maps(gis, q="", interesting_layer_title=None, interesting_l
                     if layer_info.content_status == 'deprecated':
                         deprecated_layers[id].append(map.id)
 
-            if interesting_layer_title and ttl == interesting_layer_title:
+            if ttl in interesting_layer_titles:
                 interesting_maps.append(map.id)
         #                msg += "%s: \"%s\" (%s)" % (id, ttl, t)
 
@@ -144,22 +157,40 @@ def find_interesting_maps(gis, q="", interesting_layer_title=None, interesting_l
 if __name__ == '__main__':
     gis = GIS(Config.PORTAL_URL, Config.PORTAL_USER,
               Config.PORTAL_PASSWORD, verify_cert=False)
+
+    # Find maps with the layer we're interested in -- search by ID or title or something else
+
     # For query definition, refer to http://bitly.com/1fJ8q31
     q = ""
 #    q = "title:A&T map"
-#    q = "id:3858169ab451482c9460d897e05e696c"
+    #q = "id:ba5d38a16a4841d9a85eec770fa79040" # Public Works road map
     #q = "title:Clatsop County Template"
     #q = "owner:bwilson@CLATSOP"
     title = None
 
-#    interesting_maps = find_interesting_maps(gis, q=q, interesting_layer_title=None)
-    # functioning layer
-    id = "b3e80078159a4e54b24512678d96e349" # the empty basemap in raster format that has been deleted
-    id = "4eeb630bba2d44598f8af15c44621fd7" # The current empty basemap
+    id = None
+#    id = "4eeb630bba2d44598f8af15c44621fd7" # The current empty basemap
 #    id = "VectorTile_7105" # PLSS
 #    id = "8ac30154d2f44822bbe23a78f496ccdb" # broken Roads layer
-    interesting_maps = find_interesting_maps(gis, q=q, interesting_layer_id=id)
+    interesting_maps = []
 
+    id = "be645e399add4c4db2bbe36ba754bb30" # Roads layer that I broke on 10/10/22
+    interesting_maps += find_interesting_maps(gis, q=q, 
+#        interesting_layer_titles=['County Bridges', 'Waterway Inventory'], 
+        interesting_layer_id=id)
+
+    """
+    id = "8a244c8ba3f4416e842971fafdb316f4" # DOGAMI SLIDO4
+    interesting_maps += find_interesting_maps(gis, q=q, 
+#        interesting_layer_titles=['County Bridges', 'Waterway Inventory'], 
+        interesting_layer_id=id)
+
+    id = "4de2046661b0469aa3b14216ff6f9f01"  # DOGAMI Landslide Susceptibility
+    interesting_maps += find_interesting_maps(gis, q=q,
+#        interesting_layer_titles=['County Bridges', 'Waterway Inventory'], 
+        interesting_layer_id=id)
+    """
+    
     print("%d matching maps." % len(interesting_maps))
     cm = gis.content
     print("maps = [")
@@ -171,3 +202,11 @@ if __name__ == '__main__':
     # Via API -- Can I read the JSON file, edit it, and write it back to server?
 
 # That's all!
+
+# new Roads = 17209289b3f642ebaa545ef3ab5a5f66
+# cc webmaps f84321f3545643adaadf889ce70dc73e
+#maps = [
+#    ("ba5d38a16a4841d9a85eec770fa79040", "Clatsop County Public Works Road Map - Web Map"),
+#    ("3858169ab451482c9460d897e05e696c", "A&T map"),
+#    ("bb5debcf14db4c48bbd4c54fc0fc207f", "Planning Map"),
+#]

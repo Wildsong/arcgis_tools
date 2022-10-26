@@ -1,0 +1,52 @@
+{
+  "id": "mapproxy_1001",
+  "url": "https://giscache.co.clatsop.or.us/county-aerials-brief/wms",
+  "visibility": false,
+  "visibleLayers": [
+    "naip2020"
+  ],
+  "opacity": 1,
+  "title": "County Aerial Photos (brief)",
+  "version": "1.3.0",
+  "mapUrl": "https://giscache.co.clatsop.or.us/county-aerials-brief/wms",
+  "featureInfoUrl": "https://giscache.co.clatsop.or.us/county-aerials-brief/wms",
+  "featureInfoFormat": "text/html",
+  "layers": [
+    {
+      "name": "naip2014",
+      "title": "NAIP 2014 1m 4-band"
+    },
+    {
+      "name": "naip2016",
+      "title": "NAIP 2016 1m 4-band"
+    },
+    {
+      "name": "osip2018",
+      "title": "OSIP 2018 1 foot"
+    },
+    {
+      "name": "naip2020",
+      "title": "NAIP 2020 2 foot"
+    }
+  ],
+  "spatialReferences": [
+    900913,
+    4258,
+    4326,
+    3857
+  ],
+  "extent": [
+    [
+      -124.1,
+      45.77
+    ],
+    [
+      -123.35,
+      46.3
+    ]
+  ],
+  "maxWidth": 4000,
+  "maxHeight": 4000,
+  "type": "WMS",
+  "layerType": "WMS"
+}

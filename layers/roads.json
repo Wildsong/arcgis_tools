@@ -1,0 +1,454 @@
+{
+  "id": "Roads_5438",
+  "layerType": "ArcGISMapServiceLayer",
+  "url": "https://delta.co.clatsop.or.us/server/rest/services/Roads/MapServer",
+  "visibility": true,
+  "opacity": 1,
+  "title": "Roads",
+  "itemId": "17209289b3f642ebaa545ef3ab5a5f66",
+  "layers": [
+    {
+      "id": 1,
+      "name": "Roads by Jurisdiction",
+      "popupInfo": {
+        "title": "{StreetName}",
+        "mediaInfos": [],
+        "popupElements": [
+          {
+            "fieldInfos": [
+              {
+                "fieldName": "OBJECTID",
+                "isEditable": false,
+                "format": {
+                  "places": 0,
+                  "digitSeparator": false
+                },
+                "visible": true,
+                "label": "OBJECTID"
+              },
+              {
+                "fieldName": "FunClassM",
+                "isEditable": true,
+                "visible": true,
+                "label": "FunctionalClassM"
+              },
+              {
+                "fieldName": "StreetName",
+                "isEditable": true,
+                "visible": true,
+                "label": "StreetName"
+              },
+              {
+                "fieldName": "Shape__Length",
+                "isEditable": false,
+                "format": {
+                  "places": 6,
+                  "digitSeparator": false
+                },
+                "visible": true,
+                "label": "Shape.STLength()"
+              },
+              {
+                "fieldName": "FunClassD",
+                "visible": true,
+                "label": "FunClassD"
+              },
+              {
+                "fieldName": "Owner",
+                "visible": true,
+                "label": "Owner"
+              },
+              {
+                "fieldName": "alias",
+                "visible": true,
+                "label": "alias"
+              },
+              {
+                "fieldName": "surface",
+                "visible": true,
+                "label": "surface"
+              },
+              {
+                "fieldName": "Miles",
+                "visible": true,
+                "label": "Miles"
+              }
+            ],
+            "type": "fields"
+          }
+        ],
+        "fieldInfos": [
+          {
+            "fieldName": "OBJECTID",
+            "isEditable": false,
+            "format": {
+              "places": 0,
+              "digitSeparator": false
+            },
+            "visible": true,
+            "label": "OBJECTID"
+          },
+          {
+            "fieldName": "FunClassM",
+            "isEditable": true,
+            "visible": true,
+            "label": "FunctionalClassM"
+          },
+          {
+            "fieldName": "StreetName",
+            "isEditable": true,
+            "visible": true,
+            "label": "StreetName"
+          },
+          {
+            "fieldName": "Shape__Length",
+            "isEditable": false,
+            "format": {
+              "places": 6,
+              "digitSeparator": false
+            },
+            "visible": true,
+            "label": "Shape.STLength()"
+          },
+          {
+            "fieldName": "FunClassD",
+            "visible": true,
+            "label": "FunClassD"
+          },
+          {
+            "fieldName": "Owner",
+            "visible": true,
+            "label": "Owner"
+          },
+          {
+            "fieldName": "alias",
+            "visible": true,
+            "label": "alias"
+          },
+          {
+            "fieldName": "surface",
+            "visible": true,
+            "label": "surface"
+          },
+          {
+            "fieldName": "Miles",
+            "visible": true,
+            "label": "Miles"
+          }
+        ],
+        "expressionInfos": []
+      }
+    },
+    {
+      "id": 2,
+      "name": "Roads",
+      "popupInfo": {
+        "title": "Roads: {StreetName}",
+        "fieldInfos": [
+          {
+            "fieldName": "OBJECTID",
+            "isEditable": false,
+            "format": {
+              "places": 0,
+              "digitSeparator": false
+            },
+            "visible": false,
+            "label": "OBJECTID"
+          },
+          {
+            "fieldName": "alias",
+            "visible": true,
+            "label": "Alias"
+          },
+          {
+            "fieldName": "FunClassD",
+            "visible": true,
+            "label": "Functional Class D"
+          },
+          {
+            "fieldName": "FunClassM",
+            "isEditable": true,
+            "visible": true,
+            "label": "Functional Class M"
+          },
+          {
+            "fieldName": "StreetName",
+            "isEditable": true,
+            "visible": false,
+            "label": "StreetName"
+          },
+          {
+            "fieldName": "Owner",
+            "visible": true,
+            "label": "Owner"
+          },
+          {
+            "fieldName": "surface",
+            "visible": true,
+            "label": "Surface material"
+          },
+          {
+            "fieldName": "Miles",
+            "visible": true,
+            "label": "Length in miles",
+            "format": {
+              "places": 1,
+              "digitSeparator": false
+            }
+          },
+          {
+            "fieldName": "Shape",
+            "label": "Shape",
+            "isEditable": false,
+            "visible": false
+          },
+          {
+            "fieldName": "Shape_Length",
+            "label": "Shape.STLength()",
+            "isEditable": false,
+            "visible": false,
+            "format": {
+              "places": 2,
+              "digitSeparator": true
+            }
+          }
+        ],
+        "description": null,
+        "showAttachments": false,
+        "mediaInfos": []
+      }
+    },
+    {
+      "id": 0,
+      "name": "Trails",
+      "popupInfo": {
+        "title": "Trail: {TRAIL_NAME}",
+        "fieldInfos": [
+          {
+            "fieldName": "OBJECTID",
+            "isEditable": false,
+            "format": {
+              "places": 0,
+              "digitSeparator": false
+            },
+            "visible": false,
+            "label": "OBJECTID"
+          },
+          {
+            "fieldName": "TRAIL_NAME",
+            "isEditable": true,
+            "visible": false,
+            "label": "TRAIL_NAME"
+          },
+          {
+            "fieldName": "ALT_TRAIL_",
+            "isEditable": true,
+            "visible": true,
+            "label": "ALT_TRAIL_"
+          },
+          {
+            "fieldName": "ALT_TRAIL1",
+            "isEditable": true,
+            "visible": true,
+            "label": "ALT_TRAIL1"
+          },
+          {
+            "fieldName": "PRIMARY_US",
+            "isEditable": true,
+            "format": {
+              "places": 0,
+              "digitSeparator": false
+            },
+            "visible": true,
+            "label": "PRIMARY_US"
+          },
+          {
+            "fieldName": "SURFACE_CL",
+            "isEditable": true,
+            "format": {
+              "places": 0,
+              "digitSeparator": false
+            },
+            "visible": true,
+            "label": "SURFACE_CL"
+          },
+          {
+            "fieldName": "WIDTH",
+            "isEditable": true,
+            "format": {
+              "places": 0,
+              "digitSeparator": false
+            },
+            "visible": true,
+            "label": "WIDTH"
+          },
+          {
+            "fieldName": "WIDTH_RANG",
+            "isEditable": true,
+            "visible": true,
+            "label": "WIDTH_RANG"
+          },
+          {
+            "fieldName": "ADA",
+            "isEditable": true,
+            "format": {
+              "places": 0,
+              "digitSeparator": false
+            },
+            "visible": true,
+            "label": "ADA"
+          },
+          {
+            "fieldName": "COMMENTS",
+            "isEditable": true,
+            "visible": true,
+            "label": "COMMENTS"
+          },
+          {
+            "fieldName": "PARK_HUB_I",
+            "isEditable": true,
+            "format": {
+              "places": 6,
+              "digitSeparator": false
+            },
+            "visible": true,
+            "label": "PARK_HUB_I"
+          },
+          {
+            "fieldName": "HUB_ID",
+            "isEditable": true,
+            "format": {
+              "places": 6,
+              "digitSeparator": false
+            },
+            "visible": false,
+            "label": "HUB_ID"
+          },
+          {
+            "fieldName": "DATASOURCE",
+            "isEditable": true,
+            "format": {
+              "places": 0,
+              "digitSeparator": false
+            },
+            "visible": false,
+            "label": "DATASOURCE"
+          },
+          {
+            "fieldName": "DATASOUR_1",
+            "isEditable": true,
+            "visible": false,
+            "label": "DATASOUR_1"
+          },
+          {
+            "fieldName": "LOCATION_N",
+            "isEditable": true,
+            "visible": false,
+            "label": "LOCATION_N"
+          },
+          {
+            "fieldName": "CREATOR",
+            "isEditable": true,
+            "visible": false,
+            "label": "CREATOR"
+          },
+          {
+            "fieldName": "CREATEDATE",
+            "isEditable": true,
+            "visible": false,
+            "label": "CREATEDATE",
+            "format": {
+              "dateFormat": "shortDateShortTime"
+            }
+          },
+          {
+            "fieldName": "EDITOR",
+            "isEditable": false,
+            "visible": false,
+            "label": "EDITOR"
+          },
+          {
+            "fieldName": "EDITDATE",
+            "isEditable": false,
+            "visible": false,
+            "label": "EDITDATE",
+            "format": {
+              "dateFormat": "shortDate"
+            }
+          },
+          {
+            "fieldName": "GlobalID",
+            "isEditable": true,
+            "visible": false,
+            "label": "GlobalID"
+          },
+          {
+            "fieldName": "Shape_Leng",
+            "isEditable": true,
+            "format": {
+              "places": 6,
+              "digitSeparator": false
+            },
+            "visible": false,
+            "label": "Shape_Leng"
+          },
+          {
+            "fieldName": "created_user",
+            "isEditable": true,
+            "visible": false,
+            "label": "created_user"
+          },
+          {
+            "fieldName": "created_date",
+            "isEditable": true,
+            "visible": false,
+            "label": "created_date",
+            "format": {
+              "dateFormat": "shortDateShortTime"
+            }
+          },
+          {
+            "fieldName": "last_edited_user",
+            "isEditable": true,
+            "visible": false,
+            "label": "last_edited_user"
+          },
+          {
+            "fieldName": "last_edited_date",
+            "isEditable": true,
+            "visible": false,
+            "label": "last_edited_date",
+            "format": {
+              "dateFormat": "shortDate"
+            }
+          },
+          {
+            "fieldName": "NOTES",
+            "isEditable": true,
+            "visible": false,
+            "label": "NOTES"
+          },
+          {
+            "fieldName": "Shape",
+            "label": "Shape",
+            "isEditable": false,
+            "visible": false
+          },
+          {
+            "fieldName": "Shape_Length",
+            "label": "Shape_Length",
+            "isEditable": false,
+            "visible": false,
+            "format": {
+              "places": 2,
+              "digitSeparator": true
+            }
+          }
+        ],
+        "description": null,
+        "showAttachments": false,
+        "mediaInfos": []
+      }
+    }
+  ]
+}

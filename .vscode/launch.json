@@ -12,9 +12,6 @@
             "program": "${file}",
             "console": "internalConsole",
             "envFile": "${workspaceFolder}/.env",
-            "env": {
-                "PYTHONPATH": "${workspaceFolder}"
-            },
             "justMyCode": true
         },
         {

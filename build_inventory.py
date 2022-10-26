@@ -6,7 +6,6 @@
 import os
 from collections import defaultdict
 from arcgis.gis import GIS
-from arcgis.gis.server.catalog import ServicesDirectory
 from arcgis.mapping import WebMap
 from config import Config
 
@@ -63,17 +62,6 @@ def generate_html(dtype):
 
     return
 
-def inventory_services() -> list:
-    """
-        Returns a list of every service that relies on data living in the SQL database.
-    """
-    sd = ServicesDirectory(url=Config.SERVER_URL, username=Config.PORTAL_USER, password=Config.PORTAL_PASSWORD)
-    print("Server folders:", sd.folders)
-
-    # This takes 16 seconds in Jupyter Notebook and infinite time here.
-    return sd.list()
- 
-
 def inventory_maps(gis, query=''):
     q = query + ' ' + exclude_esri
     list_of_maps = gis.content.search(q, item_type='web map', max_items=-1)
@@ -106,6 +94,45 @@ def inventory_maps(gis, query=''):
     print(dtype)
 
 
+def inventory_services(gis) -> None:
+    interesting_services = list()
+    interesting_types = ['Map Service', 'Feature Service']
+    urls = list()
+
+    myservers = gis.admin.servers.list()
+    for f in myservers[0].services.folders:
+        services = myservers[0].services.list(folder=f)
+        print("Checking folder=\"%s\"; %d services." % (f, len(services)))
+        for s in services:
+            properties = s.iteminformation.properties
+            try:
+                if properties['type'] in interesting_types:
+                    interesting_services.append(s)
+                else:
+                    print(properties['title'], ':', properties['type'])
+            except KeyError:
+                if 'GPServer' in s.url:
+                    continue
+                if 'GeometryServer' in s.url:
+                    continue
+                if 'VectorTileServer' in s.url:
+                    continue
+                if 'ImageServer' in s.url:
+                    continue
+                urls.append(s.url)
+
+    # These did not have proprties,
+    # look like mostly Hosted
+    #print(urls)
+
+    for s in interesting_services:
+        properties = s.iteminformation.properties
+        if properties['type'] == 'Map Service':
+            print(s.url)
+            continue
+        else:
+            print(properties)
+
 if __name__ == "__main__":
 
     # Weird stuff happens if these are not defined.
@@ -114,12 +141,6 @@ if __name__ == "__main__":
     assert(Config.PORTAL_PASSWORD)
     assert(Config.SERVER_URL)
 
-    services = inventory_services()
-    print("Services found %d" % len(services))
-    for s in services:
-        print(s)
-        continue
- 
     # See arcgis.gis.ContentManager
     # For query definition, refer to http://bitly.com/1fJ8q31
     #q = "title:Clatsop County Template"
@@ -127,6 +148,56 @@ if __name__ == "__main__":
     gis = GIS(Config.PORTAL_URL, Config.PORTAL_USER, Config.PORTAL_PASSWORD)
     #inventory_maps(gis)
 
+    types = [
+        'AppBuilder Extension', 
+        'Application', 
+        'Desktop Application','Desktop Application Template', 
+        'Site Application', 
+        'Document Link', 
+        'Administrative Report',
+        'Form', 'Site Page',
+        'CSV', 'Microsoft Excel', 'Microsoft Word', 'PDF', 'KML',
+        'Map Area', 
+        'WMS', 'WMTS',
+        'Code Attachment', 'Code Sample',
+        'Geoprocessing Service',
+        'Dashboard', 'StoryMap', 'StoryMap Theme',
+        'Web Experience', 'Web Mapping Application', 
+        'Image', 
+        'Geometry Service',
+        'Feature Service',
+        'Shapefile',  
+        'Layer Package', 'Tile Package', 
+        'SQLite Geodatabase',
+        'Vector Tile Service', 'Vector Tile Package', 
+        'Web Scene', 'Service Definition', 'Map Service', 
+        'Web Map', ]
+    cm = gis.content
+
+    q = 'title:EGDB_surveys -owner:esri -owner:esri_apps -owner:esri_nav'
+
+    items = cm.search(q, item_type='Feature Service', max_items=-1)
+    print("Feature Services", len(items))
+    for item in items:
+        print(item.title, item.type)
+        try:
+            for l in item.layers:
+                print(l)
+                continue
+        except Exception as e:
+            pass
+
+    items = cm.search(q, item_type='Map Service', max_items=-1)
+    print("Map Services", len(items))
+    for item in items:
+        print(item.title)
+        for layer in item.layers:
+            print(layer, layer.source)
+
+
+    inventory_services(gis)
+
+    print("That's all!")
 
 #    q = "NOT owner:esri_apps"
 #    items = gis.content.search(q, outside_org=False, max_items=5000)

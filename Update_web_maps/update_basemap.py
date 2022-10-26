@@ -68,7 +68,6 @@ def update_maps(q, old_id, new_layer):
 
                 print("new layer", new_id)
 
-
 # ALAS ALAS
 # this puts the "added" layer at the TOP of the layer list.
 # making this script, well, useless

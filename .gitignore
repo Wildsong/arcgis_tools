@@ -1,4 +1,10 @@
 test_workspace.gdb
+*.sde
+*.ipynb
+
+address_points*
+*.csv
+*.xml
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
