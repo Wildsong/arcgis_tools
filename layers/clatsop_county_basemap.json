@@ -1,0 +1,10 @@
+{
+  "id": "VectorTile_8279",
+  "type": "VectorTileLayer",
+  "layerType": "VectorTileLayer",
+  "title": "Clatsop County",
+  "styleUrl": "https://delta.co.clatsop.or.us/server/rest/services/Hosted/Unlabeled_Vector_Tiles_20220704_0819/VectorTileServer/resources/styles/root.json",
+  "itemId": "ac49f1b738664d8ca3f8a4141f28c4a0",
+  "visibility": true,
+  "opacity": 1
+}

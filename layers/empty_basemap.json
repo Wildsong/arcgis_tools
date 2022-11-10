@@ -1,0 +1,12 @@
+{
+  "id": "VectorTile_3458",
+  "type": "VectorTileLayer",
+  "layerType": "VectorTileLayer",
+  "title": "Empty Basemap",
+  "styleUrl": "https://delta.co.clatsop.or.us/server/rest/services/Hosted/No_Basemap/VectorTileServer/resources/styles/root.json",
+  "itemId": "00a10153ac2c4aa58818e66bc7758dc7",
+  "visibility": true,
+  "opacity": 1,
+  "minScale": 2.958287637957775e8,
+  "maxScale": 147914382
+}

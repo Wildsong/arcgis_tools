@@ -1,0 +1,12 @@
+{
+  "id": "VectorTile_8848",
+  "type": "VectorTileLayer",
+  "layerType": "VectorTileLayer",
+  "title": "Contours",
+  "styleUrl": "https://delta.co.clatsop.or.us/server/rest/services/Hosted/Contours/VectorTileServer/resources/styles/root.json",
+  "itemId": "8c18d85d569a40be8bc75df6d313cfed",
+  "visibility": false,
+  "opacity": 1,
+  "minScale": 233345,
+  "maxScale": 282.124294
+}

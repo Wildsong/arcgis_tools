@@ -1,0 +1,10 @@
+{
+  "id": "VectorTile_1245",
+  "type": "VectorTileLayer",
+  "layerType": "VectorTileLayer",
+  "title": "Clatsop County Labels",
+  "styleUrl": "https://delta.co.clatsop.or.us/server/rest/services/Hosted/Vector_Tile_Labels_20220704_0819/VectorTileServer/resources/styles/root.json",
+  "itemId": "30f630b8963f4a108d678fef407be4cd",
+  "visibility": true,
+  "opacity": 1
+}

@@ -1,0 +1,47 @@
+{
+  "id": "mapproxy_1002",
+  "url": "https://giscache.co.clatsop.or.us/city-aerials/wms",
+  "visibility": false,
+  "visibleLayers": ["warrenton2011", "gearhart2009", "astoria2021"],
+  "opacity": 1,
+  "title": "City aerial photos",
+  "version": "1.3.0",
+  "mapUrl": "https://giscache.co.clatsop.or.us/city-aerials/wms",
+  "featureInfoUrl": "https://giscache.co.clatsop.or.us/city-aerials/wms",
+  "featureInfoFormat": "text/html",
+  "layers": [
+    {
+      "name": "warrenton2011",
+      "title": "City of Warrenton 2011 6\""
+    },
+    {
+      "name": "gearhart2009",
+      "title": "City of Gearhart 2009 6\""
+    },
+    {
+      "name": "astoria2004",
+      "title": "City of Astoria 2004 6\""
+    },
+    {
+      "name": "astoria2010",
+      "title": "City of Astoria 2010 6\""
+    },
+    {
+      "name": "astoria2015",
+      "title": "City of Astoria 2015 6\""
+    },
+    {
+      "name": "astoria2021",
+      "title": "City of Astoria 2021 3\""
+    }
+  ],
+  "spatialReferences": [3857, 4326, 900913, 4258],
+  "extent": [
+    [-20037508.342789244, -20037508.342789248],
+    [20037508.342789244, 20037508.342789248]
+  ],
+  "maxWidth": 4000,
+  "maxHeight": 4000,
+  "type": "WMS",
+  "layerType": "WMS"
+}

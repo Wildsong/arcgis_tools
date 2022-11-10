@@ -1,0 +1,9 @@
+    {
+      "id": "Tsunami_evacuation_zones_5072",
+      "layerType": "ArcGISMapServiceLayer",
+      "url": "https://delta.co.clatsop.or.us/server/rest/services/Tsunami_evacuation_zones/MapServer",
+      "visibility": false,
+      "opacity": 0.78,
+      "title": "Tsunami Evacuation Zones",
+      "itemId": "1e5ea4c1db9f4ddcbc96e694439465bb"
+    }

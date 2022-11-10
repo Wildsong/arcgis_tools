@@ -6,7 +6,7 @@
     "naip2020"
   ],
   "opacity": 1,
-  "title": "County Aerial Photos (brief)",
+  "title": "County Aerial Photos",
   "version": "1.3.0",
   "mapUrl": "https://giscache.co.clatsop.or.us/county-aerials-brief/wms",
   "featureInfoUrl": "https://giscache.co.clatsop.or.us/county-aerials-brief/wms",

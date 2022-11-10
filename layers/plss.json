@@ -1,0 +1,10 @@
+{
+  "id": "VectorTile_7105",
+  "type": "VectorTileLayer",
+  "layerType": "VectorTileLayer",
+  "title": "PLSS",
+  "styleUrl": "https://delta.co.clatsop.or.us/server/rest/services/Hosted/PLSS/VectorTileServer/resources/styles/root.json",
+  "itemId": "0e9229bb79df46c2a1ec4e3978559be4",
+  "visibility": false,
+  "opacity": 1
+}

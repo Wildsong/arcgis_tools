@@ -7,14 +7,12 @@ import os
 import json
 import re
 from glob import glob
-from utils import load_json, save_json, findLayer, describeMap
+from utils import load_json, save_json, findLayer, describeMap, portalContentFolder
 
 # ======================================================================================================
 
 if __name__ == "__main__":
     
-    arcgisContentFolder = "\\\\cc-gis\\C$\\arcgis\\arcgisportal\\content\\items"
-
     # This is my standard map, which is used as the basis of other projects.
     # First update this map in the Classic Map Viewer,
     # (make sure you set up popups too!),
@@ -26,7 +24,7 @@ if __name__ == "__main__":
 
     mapId = ccMapTemplateId
 
-    map = load_json(os.path.join(arcgisContentFolder, mapId, mapId))
+    map = load_json(os.path.join(portalContentFolder, mapId, mapId))
     describeMap(map)
 
     layerList = [

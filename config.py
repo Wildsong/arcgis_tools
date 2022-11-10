@@ -9,6 +9,10 @@ class Config(object):
     PORTAL_URL = os.environ.get('PORTAL_URL')
     PORTAL_USER = os.environ.get("PORTAL_USER")
     PORTAL_PASSWORD = os.environ.get("PORTAL_PASSWORD")
+
+    CHAT_USER="bwilson"
+    CHAT_PASSWORD = os.environ.get("PORTAL_PASSWORD")
+    CHAT_SERVER = "https://chat.clatsopcounty.gov"
     
     HUB_URL = os.environ.get('HUB_URL')
     AGO_URL = os.environ.get('AGO_URL')

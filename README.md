@@ -33,8 +33,10 @@ Notes:
 Optionally, install these:
 
 ```bash
-conda install -n arcgis_tools -c esri python arcpy
-conda install -n arcgis_tools opencv pillow
+conda activate arcgis_tools
+conda install -c esri python arcpy
+conda install opencv pillow
+pip install rocket-python
 ```
 
 On a server there is a different package for arcgpy, see https://enterprise.arcgis.com/en/server/latest/develop/linux/scripting-service-publishing-with-arcpy.htm

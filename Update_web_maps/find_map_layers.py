@@ -17,21 +17,6 @@ VERSION = '1.0'
 path,exe = os.path.split(__file__)
 myname = exe + ' ' + VERSION
 
-def search_map_for_photoshow(map_id):
-    content="//CC-GIS/C$/arcgis/arcgisportal/content/items"
-    path = os.path.join(content, map_id, map_id) # File and folder, same name!
-    if os.path.exists(path):
-        with open(path, "r") as fp:
-            text = fp.read()
-        #print(text)
-        if "photoshow" in text:
-            print("We got one.", map_id)
-            return
-    else:
-        print(f"ERROR: No content file called \"{id}\" exists.")
-    return
-
-
 def find_interesting_maps(gis, q="", interesting_layer_titles=list(), interesting_layer_id=None) -> list:
     """
         Search for all maps matching a query
@@ -174,7 +159,15 @@ if __name__ == '__main__':
 #    id = "8ac30154d2f44822bbe23a78f496ccdb" # broken Roads layer
     interesting_maps = []
 
-    id = "be645e399add4c4db2bbe36ba754bb30" # Roads layer that I broke on 10/10/22
+#    id = "be645e399add4c4db2bbe36ba754bb30" # Roads layer that I broke on 10/10/22
+
+#    id = "" # broken Roads layer
+#    id = "8ac30154d2f44822bbe23a78f496ccdb" # broken Roads layer
+
+    # Tsunami Evacuation Zones (KH edition)
+    # MIL and layer 0
+    id = "fcc3492b35b648bf8750ea69a6163022"
+
     interesting_maps += find_interesting_maps(gis, q=q, 
 #        interesting_layer_titles=['County Bridges', 'Waterway Inventory'], 
         interesting_layer_id=id)
