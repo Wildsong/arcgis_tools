@@ -1,3 +1,8 @@
+"""
+        This used to lookup maps in apps and only repair those.
+        Now it finds every map on the Portal and repairs all of them.
+
+"""
 import os
 from deepdiff import DeepDiff
 from glob import glob

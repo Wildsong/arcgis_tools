@@ -32,19 +32,19 @@ Currently the files extracted are
 * layer_roads.json
 
 I can edit these files by hand.
-Then I feed them back into the template map using "map_repair"!
+Then you should feed them back into the template map using "map_repair"!
+That way I don't extract the wrong layers next time I run an extract.
 
-### map_repair.py
+### map_repair.py (working for now!!)
 
-Writes JSON layer files into the mapfiles.
-The mapfiles are the ones in a list of apps.
-Also it will repair the template (see extract_layer.py).
+Writes JSON layer files (both operational and basemap layers) into the mapfiles.
+Finds the list of layers by querying the Portal.
 
 ### old_map_repair.py
 
 Clumsy version that will find all the maps using
 the old services or whatever, and replace it with the new.
-### find_map_layers.py
+### find_map_layers.py (deprecated)
 
 This will look for all the maps in Portal and list them.
 You can set various queries and filters.
