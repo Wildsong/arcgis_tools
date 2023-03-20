@@ -1,4 +1,6 @@
 #!/usr/bin/env -S conda run -n arcgis_tools --no-capture-output python
+# Remember to set Portal credentials in the .conda/envs/arcgis_tools/etc/conda/activate.d/ file.
+# The CIFS credentials are automounted using credentials from /etc/creds/
 """
     Check for missing taxmap PDF files.
 """
@@ -13,6 +15,7 @@ verbose = True
 
 class Config(object):
     PORTAL_URL = os.environ.get('PORTAL_URL')
+    SERVER_URL = os.environ.get('SERVER_URL')
     PORTAL_USER = os.environ.get("PORTAL_USER")
     PORTAL_PASSWORD = os.environ.get("PORTAL_PASSWORD")
     PDFLIB = os.environ.get("PDFLIB")
@@ -22,7 +25,7 @@ if __name__ == '__main__':
               Config.PORTAL_PASSWORD, verify_cert=False)
 
     # Get a dataframe of all the taxlots
-    url = "https://delta.co.clatsop.or.us/server/rest/services/Taxlots/FeatureServer/1"
+    url = f"{Config.SERVER_URL}/rest/services/Taxlots/FeatureServer/1"
     layer = arcgis.features.FeatureLayer(url,gis)
     
     taxlotkey = "TAXLOTKEY"
@@ -35,7 +38,7 @@ if __name__ == '__main__':
     os.chdir(Config.PDFLIB)
     files = glob('*.pdf')
     if verbose:
-        print("There are %d PDF files in \"%s\"." % (len(files), Config.PDFLIB))
+        print(f"PDF files missing in {Config.PDFLIB}: {len(files)}")
 
     # Look for missing PDF files
     missing = dict()

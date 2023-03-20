@@ -12,5 +12,9 @@ to avoid having broken links in webmaps.
 I run this once a week as a cronjob
 and so its output is automatically emailed to me.
 
-The .env file has to be written as a shell file in
-~/.conda/env
+The environment is supported via conda, so refer to
+~/.conda/envs/arcgis_tools/etc/conda/activate.d/env_vars.sh
+for PORTAL_* and SERVER_URL.
+
+Credentials for the file server are handled through
+the automounter, so refer to /etc/creds/
