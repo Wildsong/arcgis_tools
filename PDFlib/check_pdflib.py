@@ -1,9 +1,13 @@
 #!/usr/bin/env -S conda run -n arcgis_tools --no-capture-output python
-# Remember to set Portal credentials in the .conda/envs/arcgis_tools/etc/conda/activate.d/ file.
-# The CIFS credentials are automounted using credentials from /etc/creds/
+# Remember to set credentials etc in the .conda/envs/arcgis_tools/etc/conda/activate.d/ files.
 """
-    Check for missing taxmap PDF files.
+    Check for missing taxmap PDF files. 
+    Use the -v option to get output even when nothing is missing. 
+    Default is to be quiet for running from crontab.
+
+    This script is part of arcgis_tools.
 """
+import sys
 import os
 from arcgis.gis import GIS
 import arcgis.features
@@ -11,7 +15,12 @@ import pandas as pd
 from glob import glob
 
 # Normally we want to be quiet when running from crontab.
-verbose = True
+verbose = False
+try:
+    verbose = sys.argv[1] == '-v' 
+except:
+    pass
+
 
 class Config(object):
     PORTAL_URL = os.environ.get('PORTAL_URL')
@@ -38,7 +47,7 @@ if __name__ == '__main__':
     os.chdir(Config.PDFLIB)
     files = glob('*.pdf')
     if verbose:
-        print(f"PDF files missing in {Config.PDFLIB}: {len(files)}")
+        print(f"Count of PDF files in {Config.PDFLIB}: {len(files)}")
 
     # Look for missing PDF files
     missing = dict()
