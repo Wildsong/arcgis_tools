@@ -84,16 +84,18 @@ def findObjects(l:list, field:str, pattern:str):
             matches.append(item)
     return matches
 
-def findLayer(l:list, field:str, pattern:str) -> int:
+def findLayer(layers:list, field:str, pattern:str) -> int:
     """
     Search for a layer based on an attribute field.
     Return the index of the last matching layer or None.
+    Throws an error if your expression matches more than one layer.
     """
     inx = 0
     found = None
-    for item in l:
+    for item in layers:
         if item and field in item:
             value = item[field]
+            #print(value)
             mo =  re.search(pattern, value)
             if mo:
                 print(f"    [{inx}] \"{value}\".")

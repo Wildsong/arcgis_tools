@@ -126,6 +126,7 @@ def test_layers(cm:object, layers:list) -> list:
                 broken.append(title)
     return broken
 
+
 def addComment(gis, id, txt:str) -> None:
     try:
         item = ITEM(gis, id)
@@ -197,6 +198,11 @@ if __name__ == "__main__":
     basemapFile = "layers/basemap.json"
 
     replacement_layers = [
+        {
+            "key": "title",
+            "title": "^Taxlots$",
+            "layerFile": 'layers/taxlots.json'
+        },
         {
             "key": "title",
             "title": "^Tsunami [Ee]vacuation [Zz]ones?", # remember these are regex strings
@@ -328,7 +334,7 @@ if __name__ == "__main__":
                 save_json(original_map, backupFile, minify=False)
                 save_json(new_map, mapFile) ## OVERWRITE ORIGINAL
                 msg = f"Repaired by {myname}. Wrote backup to {backupFile}."
-                print(msg)
+                #print(msg)
                 if len(broken_ops):
                     b = ' '.join(broken_ops)
                     addComment(gis, mapId, f"BROKEN LAYERS: {b}")

@@ -10,6 +10,9 @@ class Config(object):
     PORTAL_USER = os.environ.get("PORTAL_USER")
     PORTAL_PASSWORD = os.environ.get("PORTAL_PASSWORD")
 
+    BASEMAP_GALLERY = 'CC Basemap Gallery for Web Maps'
+    BASEMAP_GALLERY_ID = 'c8249f276d564b9bba0001128bce3787'
+
     CHAT_USER="bwilson"
     CHAT_PASSWORD = os.environ.get("PORTAL_PASSWORD")
     CHAT_SERVER = "https://chat.clatsopcounty.gov"
@@ -76,10 +79,13 @@ if __name__ == "__main__":
     #gis = GIS(Config.PORTAL_URL, Config.PORTAL_USER, Config.PORTAL_PASSWORD)
     #print(gis)
 
-    # Test a connection via a Pro token
-    token = get_pro_token()
-    gis = GIS(Config.AGO_URL, api_key=token, verify_cert=False)
-    print("Logged in as", gis.properties["user"]["fullName"])
+    try:
+        # Test a connection via a Pro token
+        token = get_pro_token()
+        gis = GIS(Config.AGO_URL, api_key=token, verify_cert=False)
+        print("Logged in as", gis.properties["user"]["fullName"])
+    except Exception as e:
+        print("ERROR: Log in failed.", e)
 
     # Test a connection via a token
 # Whelp, this is wrong

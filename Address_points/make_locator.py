@@ -148,9 +148,9 @@ if __name__ == "__main__":
     # I have already created this service,
     # and I know its id and I really don't want to create a new one,
     # but if I do, well then okay
-    print("Connecting to ", Config.PORTAL_URL)
     gis = GIS(Config.PORTAL_URL, Config.PORTAL_USER, Config.PORTAL_PASSWORD,
               verify_cert=False)
+    print("Connected to ", Config.PORTAL_URL)
     itemId = 'b87919419f6c4cd4a1580085f58b0c8f'
 #    q = f"title:{service_name}, owner:bwilson@CLATSOP"
 #    locators = gis.content.search(q, max_items=10, sort_field="title",
@@ -159,6 +159,8 @@ if __name__ == "__main__":
     item = None
     try:
         item = ITEM(gis, itemId)
+        locatorUrl = Config.PORTAL_URL + '/home/item.html?id=' + item.id
+        print("Current service", locatorUrl)
     except:
         print("The old service is gone so I will make a new one.")
 

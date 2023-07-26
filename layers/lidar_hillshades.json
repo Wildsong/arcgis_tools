@@ -1,6 +1,6 @@
 {
   "id": "mapproxy_2000",
-  "url": "https://giscache.co.clatsop.or.us/y-aerials-brief/wms",
+  "url": "https://giscache.co.clatsop.or.us/lidar-2020/wms",
   "visibility": false,
   "visibleLayers": [
     "digital_terrain_model_layer_hs"
@@ -13,19 +13,19 @@
   "featureInfoFormat": "text/html",
   "layers": [
     {
-      "name": "digital_surface_model_layer_hs",
-      "title": "Hillshade (bare earth)"
+        "name": "digital_terrain_slope_model_layer",
+        "title": "Slope (in degrees)"
     },
     {
-      "name": "digital_terrain_slope_layer",
-      "title": "Slope"
+        "name": "digital_surface_model_layer_hs",
+        "title": "Highest Hit Hillshade"
     },
     {
-      "name": "digital_terrain_model_layer_hs",
-      "title": "Highest Hit Hillshade"
+        "name": "digital_terrain_model_layer_hs",
+        "title": "Hillshade (bare earth)"
     }
-  ],
-  "spatialReferences": [
+],
+"spatialReferences": [
     900913,
     4258,
     4326,

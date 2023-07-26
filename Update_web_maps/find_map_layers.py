@@ -45,7 +45,7 @@ def find_interesting_maps(gis, q="", interesting_layer_titles=list(), interestin
         try:
             web_map = WEBMAP(map)
         except Exception as e:
-            print("This map is total broken!", map, e)
+            print("This map is totally broken!", map, e)
             continue
 
         for basemap in web_map.basemap.baseMapLayers:
@@ -163,21 +163,19 @@ if __name__ == '__main__':
 
 #    id = "" # broken Roads layer
 #    id = "8ac30154d2f44822bbe23a78f496ccdb" # broken Roads layer
-
     # Tsunami Evacuation Zones (KH edition)
     # MIL and layer 0
-    id = "fcc3492b35b648bf8750ea69a6163022"
+#    id = "fcc3492b35b648bf8750ea69a6163022"
+#    interesting_maps += find_interesting_maps(gis, q=q, 
+#        interesting_layer_titles=['County Bridges', 'Waterway Inventory'], 
+#        interesting_layer_id=id)
+#    id = "8a244c8ba3f4416e842971fafdb316f4" # DOGAMI SLIDO4
 
     interesting_maps += find_interesting_maps(gis, q=q, 
-#        interesting_layer_titles=['County Bridges', 'Waterway Inventory'], 
-        interesting_layer_id=id)
+        interesting_layer_titles=['Points of interest'])
+#        interesting_layer_id=id)
 
     """
-    id = "8a244c8ba3f4416e842971fafdb316f4" # DOGAMI SLIDO4
-    interesting_maps += find_interesting_maps(gis, q=q, 
-#        interesting_layer_titles=['County Bridges', 'Waterway Inventory'], 
-        interesting_layer_id=id)
-
     id = "4de2046661b0469aa3b14216ff6f9f01"  # DOGAMI Landslide Susceptibility
     interesting_maps += find_interesting_maps(gis, q=q,
 #        interesting_layer_titles=['County Bridges', 'Waterway Inventory'], 

@@ -8,16 +8,14 @@ On my desktop I am using an existing conda environment called "arcgis_tools"
 which should already have what I need in it. Namely, "arcgis.py".
 
 (See also the arctic repo.)
-```bash
-conda activate arcgis-tools
-```
+
+    conda activate arcgis_tools
 
 Create the .env file, and don't check it in.
-```bash
-PORTAL=yourportal
-USER=
-PASSWORD=
-```
+
+    PORTAL=yourportal
+    USER=
+    PASSWORD=
 
 ## The scripts
 
@@ -27,11 +25,12 @@ Extracts the layers we need to update from the CC Map Template.
 
 Currently the files extracted are
 
-* layer_county_aerials_brief.json
-* layer_county_aerials.json
-* layer_roads.json
+* layers/taxlots.json
+* layers/county_aerials_brief.json
+* layers/county_aerials.json
+* layers/roads.json
 
-I can edit these files by hand.
+Next, I can edit these files by hand.
 Then you should feed them back into the template map using "map_repair"!
 That way I don't extract the wrong layers next time I run an extract.
 
@@ -52,6 +51,9 @@ You can set various queries and filters.
 It generates a python list that you can paste into other scripts,
 for example, repair_maps.py
 
+### build_taxlots.py (WIP)
+
+Generates the JSON for a taxlot layer from misc input.
 
 ## Resources 
 

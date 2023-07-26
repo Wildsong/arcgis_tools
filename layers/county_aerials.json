@@ -1,30 +1,17 @@
 {
-  "id": "mapproxy_1000",
-  "url": "https://giscache.co.clatsop.or.us/county-aerials/wms",
+  "id": "mapproxy_1001",
+  "url": "https://giscache.co.clatsop.or.us/county-aerials-brief/wms",
   "visibility": false,
   "visibleLayers": [
     "naip2020"
   ],
   "opacity": 1,
   "title": "County Aerial Photos",
-  "itemId": "08d7a28708f7426c966872bb9efeb75d",
   "version": "1.3.0",
-  "mapUrl": "https://giscache.co.clatsop.or.us/county-aerials/wms",
-  "featureInfoUrl": "https://giscache.co.clatsop.or.us/county-aerials/wms",
+  "mapUrl": "https://giscache.co.clatsop.or.us/county-aerials-brief/wms",
+  "featureInfoUrl": "https://giscache.co.clatsop.or.us/county-aerials-brief/wms",
   "featureInfoFormat": "text/html",
   "layers": [
-    {
-      "name": "naip1995",
-      "title": "NAIP 1995 1m BW DOQ"
-    },
-    {
-      "name": "naip2000",
-      "title": "NAIP 2000 1m BW DOQ"
-    },
-    {
-      "name": "naip2009",
-      "title": "NAIP 2009 1/2m 3-band"
-    },
     {
       "name": "naip2014",
       "title": "NAIP 2014 1m 4-band"
@@ -43,10 +30,10 @@
     }
   ],
   "spatialReferences": [
-    3857,
-    4326,
+    900913,
     4258,
-    900913
+    4326,
+    3857
   ],
   "extent": [
     [
