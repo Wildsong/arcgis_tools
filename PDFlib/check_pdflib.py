@@ -30,18 +30,39 @@ class Config(object):
     PDFLIB = os.environ.get("PDFLIB")
 
 if __name__ == '__main__':
-    gis = GIS(Config.PORTAL_URL, Config.PORTAL_USER,
-              Config.PORTAL_PASSWORD, verify_cert=False)
 
-    # Get a dataframe of all the taxlots
-    url = f"{Config.SERVER_URL}/rest/services/Taxlots/FeatureServer/1"
-    layer = arcgis.features.FeatureLayer(url,gis)
+    assert(Config.PORTAL_URL)
+    assert(Config.SERVER_URL)
+    assert(Config.PORTAL_USER)
+    assert(Config.PORTAL_PASSWORD)
+    assert(Config.PDFLIB)
+    assert(os.path.exists(Config.PDFLIB))
+        
+    try:
+        gis = GIS(Config.PORTAL_URL, Config.PORTAL_USER,
+                  Config.PORTAL_PASSWORD, verify_cert=False)
+    except Exception as e:
+        print("Can't sign in!",e)
+        exit(1)
+
+    try:
+        # Get a dataframe of all the taxlots
+        url = f"{Config.SERVER_URL}/rest/services/Taxlots/FeatureServer/1"
+        layer = arcgis.features.FeatureLayer(url,gis)
+    except Exception as e:
+        print(e)
+        print(url)
+        exit(1)
     
     taxlotkey = "TAXLOTKEY"
     taxmapnum = "TAXMAPNUM"
 
     fields = [taxlotkey, taxmapnum]
-    df = layer.query(where="1=1", out_fields=fields, as_df=True)
+    try:
+        df = layer.query(where="1=1", out_fields=fields, as_df=True)
+    except Exception as e:
+        print("Can't query layer.",e, f"url={url}")
+        exit(1)
 
     # Get a list of all the existing PDF files
     os.chdir(Config.PDFLIB)
