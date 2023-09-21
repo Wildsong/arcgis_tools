@@ -23,7 +23,7 @@ Today it's taking infinite time to 'conda install arcpy' so I am using 'clone'. 
 
     conda create -n arcgis_tools --clone arcgispro-py3
     conda activate arcgis_tools
-    conda install autopep8 python-dotenv requests deepdict
+    conda install autopep8 python-dotenv requests
 
 This process gives the warnings about an inconsistent environment but when I am done, everything seems to work okay. 
 

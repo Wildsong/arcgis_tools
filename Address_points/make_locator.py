@@ -1,22 +1,42 @@
 """
-Creates a locator
+
+    Creates a locator and uploads it to our portal.
+
 """
 import os
 import pprint
 import arcpy
 from arcgis.gis import GIS
-from arcgis.gis import Item as ITEM
+from arcgis.gis import Item as PORTAL_ITEM
 from config import Config
-
 from datetime import datetime
+
 now = datetime.now()
 datestamp = now.strftime("%Y-%m-%d %H:%M")  # for comments
 datestring = now.strftime("%Y%m%d_%H%M")  # for filenames
 
-VERSION = '1.0'
+VERSION = '1.1'
 path, exe = os.path.split(__file__)
 myname = exe + ' ' + VERSION
 
+assert os.path.exists(Config.SDE_FILE)
+
+# Sources for the data to be used in the locator
+
+Clatsop_DBO_roads = os.path.join(Config.SDE_FILE, "Clatsop.DBO.roads")
+Clatsop_DBO_taxlot_accounts = os.path.join(Config.SDE_FILE , "Clatsop.DBO.taxlot_accounts")
+Clatsop_DBO_address_points = os.path.join(Config.SDE_FILE , "Clatsop.DBO.address_points")
+
+#Clatsop_DBO_points_of_interest = os.path.join(Config.SDE_FILE , "Clatsop.DBO.points_of_interest")
+# workaround for a bad data problem, Albert Post Office which is not even there.
+Clatsop_DBO_points_of_interest = os.path.join("K:\\e911" , "points_filtered.shp") # Ick a shapefile
+
+sources = [
+    Clatsop_DBO_roads, 
+    Clatsop_DBO_taxlot_accounts,
+    Clatsop_DBO_address_points,
+    Clatsop_DBO_points_of_interest,
+]
 
 def create_locator(locator_file):
     """ Generates output in workspace """
@@ -27,12 +47,6 @@ def create_locator(locator_file):
 
     # IMPORT ALL THE DATA -- always pull the data, it needs to be fresh
     # ONLY pull attributes we need, it just burns up extra memory in the locator to copy everything
-
-    thesql = "K:\\e911\\cc-thesql.sde\\"
-    Clatsop_DBO_roads = thesql + "Clatsop.DBO.roads"
-    Clatsop_DBO_taxlot_accounts = thesql + "Clatsop.DBO.taxlot_accounts"
-    Clatsop_DBO_address_points = thesql + "Clatsop.DBO.address_points"
-    Clatsop_DBO_points_of_interest = thesql + "Clatsop.DBO.points_of_interest"
 
     # Select a version!!
 
@@ -79,6 +93,7 @@ def publish_locator(locator_file, service_name):
     This will either overwrite or create a new locator service.
     """
     portal = arcpy.GetActivePortalURL()
+    
     arcpy.SignInToPortal(Config.PORTAL_URL, Config.PORTAL_USER, Config.PORTAL_PASSWORD)
 
     sddraft_file = "C:\\Temp\locator.sddraft"
@@ -139,6 +154,9 @@ def publish_locator(locator_file, service_name):
 
 if __name__ == "__main__":
 
+    for source in sources:
+        assert arcpy.Exists(source)
+
     arcpy.env.overwriteOutput = True
 
     suffix = '_' + datestring # for debug and development
@@ -158,7 +176,7 @@ if __name__ == "__main__":
 #    print("Found %d locators." % len(locators))
     item = None
     try:
-        item = ITEM(gis, itemId)
+        item = PORTAL_ITEM(gis, itemId)
         locatorUrl = Config.PORTAL_URL + '/home/item.html?id=' + item.id
         print("Current service", locatorUrl)
     except:

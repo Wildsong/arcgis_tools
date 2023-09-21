@@ -1,7 +1,7 @@
 import os
 from ssl import ALERT_DESCRIPTION_INSUFFICIENT_SECURITY
-from dotenv import load_dotenv
 from arcgis.gis import GIS
+from dotenv import load_dotenv
 
 class Config(object):
     load_dotenv()
@@ -26,6 +26,8 @@ class Config(object):
 
     ARCGIS_ID = os.environ.get("ARCGIS_ID")
     ARCGIS_SECRET = os.environ.get("ARCGIS_SECRET")
+
+    SDE_FILE = 'K:\\ORMAP_CONVERSION\\cc-sqlservers_WINAUTH.sde'
 
 def get_token():
     # Get the ip address of my computer
@@ -66,6 +68,8 @@ if __name__ == "__main__":
     assert(Config.AGO_PASSWORD)
 
     assert(Config.SERVER_URL)
+
+    assert os.path.exists(Config.SDE_FILE)
 
     # Test connection to ArcGIS Online
     gis = GIS(Config.AGO_URL, Config.AGO_USER, Config.AGO_PASSWORD)
