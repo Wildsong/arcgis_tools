@@ -1,6 +1,10 @@
 """
 This script cleans and copies e911 data into feature classes.
 
+I used this in 2021
+
+In 2023 I used a model that is in K:/e911/e911.tbx
+
 Output will be 
 * address points
 * hydrants
