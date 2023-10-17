@@ -7,6 +7,8 @@ I switched from trying to create points based on taxlot centroids to using e911 
 so lots of code here was made obsolete but works fine
 
 e911_import.py imports the e911 address points and hydrants to the project FGDB
+2023 -- 1. I used a model instead of this script.
+        2. They did not give us hydrants so I left the "hydrants" feature class untouched
 
 gnis_import.py imports the Oregon GNIS data for Clatsop County
 
