@@ -150,11 +150,9 @@ def publish_locator(locator_file, service_name):
 
     return False
 
-def set_sharing(item: object) -> bool :
-
-    gis_team = Group('')
+def set_sharing(item: object, groups: list) -> bool :
     try:
-        item.share(everyone=True, groups="GIS Team")
+        item.share(everyone=True, groups=groups)
     except Exception as e:
         print("Could not set sharing.");
         return False
@@ -197,6 +195,8 @@ if __name__ == "__main__":
     except:
         print("The old service was not found so I will make a new one.")
 
+    groups = gis.groups.search('GIS Team')
+
     with arcpy.EnvManager(scratchWorkspace="in_memory", workspace="in_memory"):
         # This creates .loc and .loz files that contain a copy of all the data,
         # so once that is done the in_memory copies are no longer needed.
@@ -211,7 +211,7 @@ if __name__ == "__main__":
 
         if item:
             print("Setting sharing options…")
-            set_sharing(item)
+            set_sharing(item, groups)
 
             comment = "%s updated by \"%s\"" % (datestamp, myname)
             item.add_comment(comment)
