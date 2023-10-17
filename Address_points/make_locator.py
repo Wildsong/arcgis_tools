@@ -3,19 +3,22 @@
     Creates a locator and uploads it to our portal.
 
 """
-import os
+import os, sys
 import pprint
 import arcpy
-from arcgis.gis import GIS
+from arcgis.gis import GIS, Group
 from arcgis.gis import Item as PORTAL_ITEM
-from config import Config
 from datetime import datetime
+
+# Add the parent directory so we can find config.py
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+from config import Config
 
 now = datetime.now()
 datestamp = now.strftime("%Y-%m-%d %H:%M")  # for comments
 datestring = now.strftime("%Y%m%d_%H%M")  # for filenames
 
-VERSION = '1.1'
+VERSION = '1.1.1'
 path, exe = os.path.split(__file__)
 myname = exe + ' ' + VERSION
 
@@ -92,14 +95,9 @@ def publish_locator(locator_file, service_name):
     """
     This will either overwrite or create a new locator service.
     """
-    portal = arcpy.GetActivePortalURL()
-    
-    arcpy.SignInToPortal(Config.PORTAL_URL, Config.PORTAL_USER, Config.PORTAL_PASSWORD)
-
     sddraft_file = "C:\\Temp\locator.sddraft"
     sd_file = "C:\\Temp\\locator.sd"
 
-    folderName = "Locator_services"
     summary = "Locator based on E911 address points, points of interest, parcels, and roads"
     tags = "Clatsop County, address, locator, geocode"
     
@@ -111,7 +109,6 @@ def publish_locator(locator_file, service_name):
         locator_file, sddraft_file, 
         service_name,
         copy_data_to_server=True,
-        folder_name = folderName,
         summary=summary, tags=tags, max_result_size=10,
         max_batch_size=500, suggested_batch_size=150,
         overwrite_existing_service=True
@@ -130,8 +127,10 @@ def publish_locator(locator_file, service_name):
             messages = results.getMessages()
             pprint.pprint(messages, indent=2)
 
+            print("Uploading to", server)
+
             results = arcpy.server.UploadServiceDefinition(in_sd_file=sd_file, in_server=server, 
-                in_folder_type = "EXISTING", in_folder = folderName,
+                in_folder_type = "EXISTING",
                 in_my_contents="SHARE_ONLINE", in_public="PUBLIC"
             )
             messages = results.getMessages()
@@ -151,6 +150,16 @@ def publish_locator(locator_file, service_name):
 
     return False
 
+def set_sharing(item: object) -> bool :
+
+    gis_team = Group('')
+    try:
+        item.share(everyone=True, groups="GIS Team")
+    except Exception as e:
+        print("Could not set sharing.");
+        return False
+    return True
+
 
 if __name__ == "__main__":
 
@@ -161,15 +170,19 @@ if __name__ == "__main__":
 
     suffix = '_' + datestring # for debug and development
     locator_file = "c:\\Temp\\locator" + suffix
-    service_name = "Clatsop_County_Locator"  # No spaces or special characters here
 
     # I have already created this service,
     # and I know its id and I really don't want to create a new one,
     # but if I do, well then okay
-    gis = GIS(Config.PORTAL_URL, Config.PORTAL_USER, Config.PORTAL_PASSWORD,
-              verify_cert=False)
-    print("Connected to ", Config.PORTAL_URL)
+
+    service_name = "Clatsop_County_Locator"  # No spaces or special characters here
     itemId = 'b87919419f6c4cd4a1580085f58b0c8f'
+
+    portal = arcpy.GetActivePortalURL() # I wonder where it finds this.
+    result = arcpy.SignInToPortal(portal, Config.PORTAL_USER, Config.PORTAL_PASSWORD)
+
+    gis = GIS(portal, Config.PORTAL_USER, Config.PORTAL_PASSWORD, verify_cert=False)
+    print("Connected to ", portal)
 #    q = f"title:{service_name}, owner:bwilson@CLATSOP"
 #    locators = gis.content.search(q, max_items=10, sort_field="title",
 #                              sort_order="asc", outside_org=False, item_type="Geocoding Service")
@@ -177,10 +190,12 @@ if __name__ == "__main__":
     item = None
     try:
         item = PORTAL_ITEM(gis, itemId)
-        locatorUrl = Config.PORTAL_URL + '/home/item.html?id=' + item.id
+        locatorUrl = portal + '/home/item.html?id=' + item.id
         print("Current service", locatorUrl)
+        print("Setting sharing options…")
+        set_sharing(item)
     except:
-        print("The old service is gone so I will make a new one.")
+        print("The old service was not found so I will make a new one.")
 
     with arcpy.EnvManager(scratchWorkspace="in_memory", workspace="in_memory"):
         # This creates .loc and .loz files that contain a copy of all the data,
@@ -195,6 +210,9 @@ if __name__ == "__main__":
         publish_locator(locator_file, service_name)
 
         if item:
+            print("Setting sharing options…")
+            set_sharing(item)
+
             comment = "%s updated by \"%s\"" % (datestamp, myname)
             item.add_comment(comment)
 
