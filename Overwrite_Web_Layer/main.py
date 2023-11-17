@@ -118,7 +118,7 @@ def update_service_definition(sd_file, sdItem, service_name):
             print("Setting sharing options…")
             fs.share(org=shrOrg, everyone=shrEveryone, groups=shrGroups)
     except Exception as e:
-        print("Could set permissions for \"%s\"." % service_name, e)
+        print("Could set sharing for \"%s\"." % service_name, e)
         return None
 
     print("Finished updating: {} – ID: {}".format(fs.title, fs.id))

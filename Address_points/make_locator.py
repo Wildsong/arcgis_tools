@@ -3,140 +3,141 @@
     Creates a locator and uploads it to our portal.
 
 """
-import os, sys
+import sys
+import os
 import pprint
 import arcpy
-from arcgis.gis import GIS, Group
+from arcgis.gis import GIS
 from arcgis.gis import Item as PORTAL_ITEM
 from datetime import datetime
 
-# Add the parent directory so we can find config.py
+# Add the parent directory so we can find files up one level
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+from portal import PortalContent
 from config import Config
 
 now = datetime.now()
 datestamp = now.strftime("%Y-%m-%d %H:%M")  # for comments
 datestring = now.strftime("%Y%m%d_%H%M")  # for filenames
 
-VERSION = '1.1.1'
+VERSION = "1.4"
 path, exe = os.path.split(__file__)
-myname = exe + ' ' + VERSION
+myname = exe + " " + VERSION
 
-assert os.path.exists(Config.SDE_FILE)
-
-# Sources for the data to be used in the locator
-
-Clatsop_DBO_roads = os.path.join(Config.SDE_FILE, "Clatsop.DBO.roads")
-Clatsop_DBO_taxlot_accounts = os.path.join(Config.SDE_FILE , "Clatsop.DBO.taxlot_accounts")
-Clatsop_DBO_address_points = os.path.join(Config.SDE_FILE , "Clatsop.DBO.address_points")
-
-#Clatsop_DBO_points_of_interest = os.path.join(Config.SDE_FILE , "Clatsop.DBO.points_of_interest")
-# workaround for a bad data problem, Albert Post Office which is not even there.
-Clatsop_DBO_points_of_interest = os.path.join("K:\\e911" , "points_filtered.shp") # Ick a shapefile
-
-sources = [
-    Clatsop_DBO_roads, 
-    Clatsop_DBO_taxlot_accounts,
-    Clatsop_DBO_address_points,
-    Clatsop_DBO_points_of_interest,
-]
-
-def create_locator(locator_file):
-    """ Generates output in workspace """
-
-    msg = "Created locator \"%s\"." % locator_file
-    if arcpy.Exists(locator_file):
-        msg = "Overwrote locator \"%s\"." % locator_file
-
-    # IMPORT ALL THE DATA -- always pull the data, it needs to be fresh
-    # ONLY pull attributes we need, it just burns up extra memory in the locator to copy everything
-
-    # Select a version!!
-
-    workspace = arcpy.env.workspace
-
-    print("Loading roads into workspace")
-    roads = arcpy.conversion.FeatureClassToFeatureClass(in_features=Clatsop_DBO_roads, out_path=workspace, out_name="roads", where_clause="",
-            field_mapping="ToRight \"ToRight\" true true false 4 Long 0 10,First,#,Clatsop.DBO.roads,ToRight,-1,-1;FromRight \"FromRight\" true true false 4 Long 0 10,First,#,Clatsop.DBO.roads,FromRight,-1,-1;Street \"Street\" true true false 72 Text 0 0,First,#,Clatsop.DBO.roads,Street,0,72;FunctionalClass \"FunctionalClass\" true true false 15 Text 0 0,First,#,Clatsop.DBO.roads,FunctionalClass,0,15;FunClassD \"FunctionalClassD\" true true false 254 Text 0 0,First,#,Clatsop.DBO.roads,FunClassD,0,254;FunClassN \"FunctionalClassN\" true true false 2 Short 0 5,First,#,Clatsop.DBO.roads,FunClassN,-1,-1;FunClassM \"FunctionalClassM\" true true false 254 Text 0 0,First,#,Clatsop.DBO.roads,FunClassM,0,254;City \"City\" true true false 12 Text 0 0,First,#,Clatsop.DBO.roads,City,0,12;Name \"Name\" true true false 30 Text 0 0,First,#,Clatsop.DBO.roads,Name,0,30;FromAddressRight \"FromAddressRight\" true true false 5 Text 0 0,First,#,Clatsop.DBO.roads,FromAddressRight,0,5;ToAddressLeft \"ToAddressLeft\" true true false 5 Text 0 0,First,#,Clatsop.DBO.roads,ToAddressLeft,0,5;FromLeft \"FromLeft\" true true false 4 Long 0 10,First,#,Clatsop.DBO.roads,FromLeft,-1,-1;ToAddressRight \"ToAddressRight\" true true false 5 Text 0 0,First,#,Clatsop.DBO.roads,ToAddressRight,0,5;Owner \"Owner\" true true false 12 Text 0 0,First,#,Clatsop.DBO.roads,Owner,0,12;FromAddressLeft \"FromAddressLeft\" true true false 5 Text 0 0,First,#,Clatsop.DBO.roads,FromAddressLeft,0,5;Type \"Type\" true true false 2 Text 0 0,First,#,Clatsop.DBO.roads,Type,0,2;ToLeft \"ToLeft\" true true false 4 Long 0 10,First,#,Clatsop.DBO.roads,ToLeft,-1,-1;StreetName \"StreetName\" true true false 38 Text 0 0,First,#,Clatsop.DBO.roads,StreetName,0,38", config_keyword="")[0]
-
-    print("Loading parcels into workspace")
-    parcels = arcpy.conversion.FeatureClassToFeatureClass(in_features=Clatsop_DBO_taxlot_accounts, out_path=workspace, out_name="parcels", where_clause="",
-            field_mapping="MapTaxlot \"MapTaxlot\" true true false 25 Text 0 0,First,#,K:\\ORMAP_CONVERSION\\Clatsop_WinAuth.sde\\Clatsop.DBO.taxlot_accounts,MapTaxlot,0,25;SITUS_ADDR \"SITUS_ADDR\" true true false 40 Text 0 0,First,#,K:\\ORMAP_CONVERSION\\Clatsop_WinAuth.sde\\Clatsop.DBO.taxlot_accounts,SITUS_ADDR,0,40;SITUS_CITY \"SITUS_CITY\" true true false 20 Text 0 0,First,#,K:\\ORMAP_CONVERSION\\Clatsop_WinAuth.sde\\Clatsop.DBO.taxlot_accounts,SITUS_CITY,0,20", config_keyword="")[0]
-
-    print("Loading address points into workspace")
-    address_points = arcpy.conversion.FeatureClassToFeatureClass(in_features=Clatsop_DBO_address_points, out_path=workspace, out_name="address_points", where_clause="",
-            field_mapping="gcLgFlAdr \"Full Address\" true true false 62 Text 0 0,First,#,Clatsop.DBO.address_points,gcLgFlAdr,0,62;gcLgFlName \"Street Name\" true true false 50 Text 0 0,First,#,Clatsop.DBO.address_points,gcLgFlName,0,50;gcFullName \"Full Street Name\" true true false 56 Text 0 0,First,#,Clatsop.DBO.address_points,gcFullName,0,56;addNum \"House Number\" true true false 10 Text 0 0,First,#,Clatsop.DBO.address_points,addNum,0,10;addNumSuf \"Address Number Suffix\" true true false 6 Text 0 0,First,#,Clatsop.DBO.address_points,addNumSuf,0,6;preMod \"Prefix Modifier\" true true false 18 Text 0 0,First,#,Clatsop.DBO.address_points,preMod,0,18;preDir \"Prefix Direction\" true true false 18 Text 0 0,First,#,Clatsop.DBO.address_points,preDir,0,18;preType \"Prefix type\" true true false 14 Text 0 0,First,#,Clatsop.DBO.address_points,preType,0,14;preTypeSep \"Prefix Type Separator\" true true false 6 Text 0 0,First,#,Clatsop.DBO.address_points,preTypeSep,0,6;strName \"Street\" true true false 50 Text 0 0,First,#,Clatsop.DBO.address_points,strName,0,50;postType \"Postfix Type\" true true false 18 Text 0 0,First,#,Clatsop.DBO.address_points,postType,0,18;postDir \"Postfix Direction\" true true false 10 Text 0 0,First,#,Clatsop.DBO.address_points,postDir,0,10;postMod \"Postfix Modifier\" true true false 16 Text 0 0,First,#,Clatsop.DBO.address_points,postMod,0,16;unit \"Unit\" true true false 22 Text 0 0,First,#,Clatsop.DBO.address_points,unit,0,22;unitDesc \"Unit Description\" true true false 18 Text 0 0,First,#,Clatsop.DBO.address_points,unitDesc,0,18;unitNo \"Unit Number\" true true false 10 Text 0 0,First,#,Clatsop.DBO.address_points,unitNo,0,10;incMuni \"City\" true true false 28 Text 0 0,First,#,Clatsop.DBO.address_points,incMuni,0,28;msagComm \"MSAG Community\" true true false 24 Text 0 0,First,#,Clatsop.DBO.address_points,msagComm,0,24;postComm \"Postal Community\" true true false 26 Text 0 0,First,#,Clatsop.DBO.address_points,postComm,0,26;zipCode \"ZIP\" true true false 10 Text 0 0,First,#,Clatsop.DBO.address_points,zipCode,0,10;long \"Longitude\" true true false 8 Double 8 38,First,#,Clatsop.DBO.address_points,long,-1,-1;lat \"Latitude\" true true false 8 Double 8 38,First,#,Clatsop.DBO.address_points,lat,-1,-1;srcLastEdt \"Edit Date\" true true false 8 Date 0 0,First,#,Clatsop.DBO.address_points,srcLastEdt,-1,-1;EditDate \"Upload Date\" true true false 8 Date 0 0,First,#,Clatsop.DBO.address_points,EditDate,-1,-1;gcConfiden \"Confidence\" true true false 4 Long 0 10,First,#,Clatsop.DBO.address_points,gcConfiden,-1,-1;GlobalID_2 \"GUID\" true true false 72 Text 0 0,First,#,Clatsop.DBO.address_points,GlobalID_2,0,72;taxlotID \"Taxlot ID\" true true false 28 Text 0 0,First,#,Clatsop.DBO.address_points,taxlotID,0,28", config_keyword="")[0]
-
-    print("Loading points of interest into workspace")
-    POI = arcpy.conversion.FeatureClassToFeatureClass(in_features=Clatsop_DBO_points_of_interest, out_path=workspace, out_name="POI", where_clause="",
-            field_mapping="name \"name\" true true false 160 Text 0 0,First,#,Clatsop.DBO.points_of_interest,name,0,160;category \"category\" true true false 38 Text 0 0,First,#,Clatsop.DBO.points_of_interest,category,0,38;subcategory \"subcategory\" true true false 28 Text 0 0,First,#,Clatsop.DBO.points_of_interest,subcategory,0,28;locale \"locale\" true true false 24 Text 0 0,First,#,Clatsop.DBO.points_of_interest,locale,0,24;FEATURE_ID \"id\" true true false 8 Double 8 38,First,#,Clatsop.DBO.points_of_interest,FEATURE_ID,-1,-1", config_keyword="")[0]
-
-    print("Creating locator definition.")
+def printmessages(m):
     try:
-        arcpy.geocoding.CreateLocator(country_code="USA",
-            primary_reference_data=[[roads, "StreetAddress"], [
-                parcels, "Parcel"], [address_points, "PointAddress"], [POI, "POI"]
-            ],
-            field_mapping=[
-                "StreetAddress.HOUSE_NUMBER_FROM_LEFT roads.FromLeft", "StreetAddress.HOUSE_NUMBER_TO_LEFT roads.ToLeft", "StreetAddress.HOUSE_NUMBER_FROM_RIGHT roads.FromRight", "StreetAddress.HOUSE_NUMBER_TO_RIGHT roads.ToRight", "StreetAddress.STREET_NAME roads.Street", "StreetAddress.FULL_STREET_NAME roads.StreetName",
-                "Parcel.PARCEL_NAME parcels.MapTaxlot", "Parcel.FULL_STREET_NAME parcels.SITUS_ADDR", "Parcel.CITY parcels.SITUS_CITY",
-                "PointAddress.FEATURE_ID address_points.GlobalID_2", "PointAddress.HOUSE_NUMBER address_points.addNum", "PointAddress.STREET_PREFIX_DIR address_points.preDir", "PointAddress.STREET_PREFIX_TYPE address_points.preType", "PointAddress.STREET_NAME address_points.gcLgFlName", "PointAddress.FULL_STREET_NAME address_points.gcFullName", "PointAddress.SUB_ADDRESS_UNIT address_points.unit", "PointAddress.CITY address_points.incMuni", "PointAddress.POSTAL address_points.zipCode",
-                "POI.FEATURE_ID POI.FEATURE_ID", "POI.PLACE_NAME POI.name", "POI.CATEGORY POI.category", "POI.SUBCATEGORY POI.subcategory"
-            ],
-            out_locator=locator_file,
-            language_code="ENG", alternatename_tables=[], alternate_field_mapping=[], custom_output_fields=[], precision_type="GLOBAL_HIGH"
-        )
+        for msg in m.getAllMessages():
+            print('  ', msg[2])
     except Exception as e:
-        print(e)
-
+        pprint.pprint(m, indent=2)
     return
 
-def publish_locator(locator_file, service_name):
+def create_locator(locator: dict):
+    """Generates output in workspace"""
+
+# TODO -- 
+# If you were to put the LOC files onto a file share
+# that the Server could access, then the copy would not
+# have to take place in the publish stage.
+
+    msg = '  Created locator files "%s".' % locator['file']
+    if os.path.exists(locator['file'] + '.loc'):
+        print(f"  Deleting loc file for \"{locator['file']}\".")
+        os.unlink(locator['file'] + '.loc')
+    if os.path.exists(locator['file'] + '.loz'):
+        print(f"  Deleting loz file for \"{locator['file']}\".")
+        os.unlink(locator['file'] + '.loz')
+
+    # I used to copy all the data here
+    # but there's not much point in doing that
+    # since it gets loaded into the locator anyway.
+
+    print(f"Creating locator definition for '{locator['servicename']}'.")
+    # I ran the standard tool in Pro. I went to history, right clicked and did "copy python"
+    # Then I pasted that here and edited it.
+
+    try:
+        arcpy.geocoding.CreateLocator(
+            country_code="USA",
+            primary_reference_data=locator['reference_data'],
+            field_mapping=locator['fieldmap'],
+            out_locator=locator['file'],
+            language_code="ENG",
+            alternatename_tables=[], alternate_field_mapping=[], custom_output_fields=[], # I wonder what this is
+            precision_type="GLOBAL_HIGH",
+        )
+    except Exception as e:
+        # If you get a 99999 error here try removing
+        # POI from the list to isolate?? or postal??? Those are troublesome.
+        print(e)
+        pass
+
+    return msg
+
+
+def publish_locator(locator_file: str, service_name: str) -> bool:
     """
     This will either overwrite or create a new locator service.
+
+    Return item
     """
     sddraft_file = "C:\\Temp\locator.sddraft"
     sd_file = "C:\\Temp\\locator.sd"
 
-    summary = "Locator based on E911 address points, points of interest, parcels, and roads"
+    summary = (
+        "Locator based on E911 address points, points of interest, parcels, and roads"
+    )
     tags = "Clatsop County, address, locator, geocode"
-    
+
     # The URL of the federated server you are publishing to
     server = Config.SERVER_URL + "/rest/services/"
 
+    status = False
+
     print("Analyzing...")
     analyze_messages = arcpy.CreateGeocodeSDDraft(
-        locator_file, sddraft_file, 
+        locator_file,
+        sddraft_file,
         service_name,
         copy_data_to_server=True,
-        summary=summary, tags=tags, max_result_size=10,
-        max_batch_size=500, suggested_batch_size=150,
-        overwrite_existing_service=True
+        summary=summary,
+        tags=tags,
+        max_result_size=10,
+        max_batch_size=500,
+        suggested_batch_size=150,
+        overwrite_existing_service=True,
     )
 
-    if analyze_messages['warnings'] != {}:
-        print("Warning messages")
-        pprint.pprint(analyze_messages['warnings'], indent=2)
+    if analyze_messages["warnings"] != {}:
+        printmessages(analyze_messages)
 
     # Stage and upload the service if the sddraft analysis did not contain errors
-    if analyze_messages['errors'] == {}:
+    if analyze_messages["errors"] == {}:
         try:
             print("Staging to", sd_file)
 
-            results = arcpy.server.StageService(sddraft_file, sd_file)
-            messages = results.getMessages()
-            pprint.pprint(messages, indent=2)
+            rval = arcpy.server.StageService(sddraft_file, sd_file)
+            printmessages(rval)
 
             print("Uploading to", server)
 
-            results = arcpy.server.UploadServiceDefinition(in_sd_file=sd_file, in_server=server, 
-                in_folder_type = "EXISTING",
-                in_my_contents="SHARE_ONLINE", in_public="PUBLIC"
+# This results in a warning message, I am not sure what I need here
+#   'WARNING 086222: Output directory in service definition is not set or is invalid. Using default output directory.'
+#   Referring to https://github.com/Esri/arcgis-powershell-dsc/issues/157
+#   It looks like it has to do with a server folder, but note the folder has to exist, so create it before using it.
+#   It might be fixed iun 3.1 so give it a try.
+
+            results = arcpy.server.UploadServiceDefinition(
+                in_sd_file=sd_file,
+                in_server=server,
+                in_folder_type="EXISTING",
+                in_my_contents="SHARE_ONLINE",
+                in_public="PUBLIC",
             )
-            messages = results.getMessages()
             print("The geocode service was successfully published.")
-            pprint.pprint(messages, indent=2)
-            return True
+            printmessages(results)
+
+            status = True
 
         except arcpy.ExecuteError:
             print("An error occurred")
@@ -146,75 +147,161 @@ def publish_locator(locator_file, service_name):
         # If the sddraft analysis contained errors, display them
 
         print("Error were returned when creating service definition draft")
-        pprint.pprint(analyze_messages['errors'], indent=2)
+        printmessages(analyze_messages)
 
-    return False
+    return status
 
-def set_sharing(item: object, groups: list) -> bool :
+
+def set_sharing(item: PORTAL_ITEM, groups: list) -> bool:
     try:
         item.share(everyone=True, groups=groups)
     except Exception as e:
-        print("Could not set sharing.");
+        print("Could not set sharing.", e)
         return False
     return True
 
 
 if __name__ == "__main__":
 
-    for source in sources:
-        assert arcpy.Exists(source)
-
     arcpy.env.overwriteOutput = True
 
-    suffix = '_' + datestring # for debug and development
-    locator_file = "c:\\Temp\\locator" + suffix
+#    scratch_workspace = "in_memory"
+    scratch_workspace = "C:\\Temp\\scratch.gdb"
+    workspace = Config.SDE_FILE
 
-    # I have already created this service,
-    # and I know its id and I really don't want to create a new one,
-    # but if I do, well then okay
+    assert os.path.exists(Config.SDE_FILE)
 
-    service_name = "Clatsop_County_Locator"  # No spaces or special characters here
-    itemId = 'b87919419f6c4cd4a1580085f58b0c8f'
-
-    portal = arcpy.GetActivePortalURL() # I wonder where it finds this.
+    portal = arcpy.GetActivePortalURL()  # I wonder where it finds this.
     result = arcpy.SignInToPortal(portal, Config.PORTAL_USER, Config.PORTAL_PASSWORD)
 
     gis = GIS(portal, Config.PORTAL_USER, Config.PORTAL_PASSWORD, verify_cert=False)
     print("Connected to ", portal)
-#    q = f"title:{service_name}, owner:bwilson@CLATSOP"
-#    locators = gis.content.search(q, max_items=10, sort_field="title",
-#                              sort_order="asc", outside_org=False, item_type="Geocoding Service")
-#    print("Found %d locators." % len(locators))
-    item = None
-    try:
-        item = PORTAL_ITEM(gis, itemId)
-        locatorUrl = portal + '/home/item.html?id=' + item.id
-        print("Current service", locatorUrl)
-        print("Setting sharing options…")
-        set_sharing(item)
-    except:
-        print("The old service was not found so I will make a new one.")
+    pcm = PortalContent(gis)
+    groups = gis.groups.search("GIS Team")
 
-    groups = gis.groups.search('GIS Team')
+    # data to be used in the locators
+    points_of_interest = "Clatsop.DBO.points_of_interest"
+    address_points = "Clatsop.DBO.address_points"
+    taxlots = "Clatsop.DBO.taxlots_accounts_join"
+    zipcodes = "Clatsop.DBO.zipcodes"
+    roads = "Clatsop.DBO.roads"
 
-    with arcpy.EnvManager(scratchWorkspace="in_memory", workspace="in_memory"):
+    map_postal = [
+        "Postal.POSTAL 'Clatsop.DBO.zipcodes'.ZIP_CODE",
+        "Postal.CITY 'Clatsop.DBO.zipcodes'.NAME",
+        "Postal.REGION 'Clatsop.DBO.zipcodes'.STATE",
+    ]
+
+    suffix = ''
+    #suffix = "_" + datestring  # for debug and development
+    basename = "C:\\Temp\\" 
+
+    locators = [
+        {
+            'servicename': 'Clatsop_County_Parcel_Point_Address_Locator',
+            'reference_data': [[taxlots, 'PointAddress']],
+            'fieldmap': [
+                # Don't we have stupid awkward field names
+                "PointAddress.HOUSE_NUMBER 'Clatsop.DBO.taxlots_accounts_join'.Clatsop_dbo_AT_taxlot_accoun_70",
+                "PointAddress.STREET_PREFIX_DIR 'Clatsop.DBO.taxlots_accounts_join'.Clatsop_dbo_AT_taxlot_accoun_73",
+                "PointAddress.STREET_NAME 'Clatsop.DBO.taxlots_accounts_join'.Clatsop_dbo_AT_taxlot_accoun_71",
+                "PointAddress.SUB_ADDRESS_UNIT 'Clatsop.DBO.taxlots_accounts_join'.Clatsop_dbo_AT_taxlot_accoun_75",
+                "PointAddress.CITY 'Clatsop.DBO.taxlots_accounts_join'.Clatsop_dbo_AT_taxlot_accoun_61",
+                #"Parcel.SUBREGION 'Clatsop.DBO.taxlots_accounts_join'.County", # This field has 4 or NULL in it.
+                #"Parcel.REGION 'Clatsop.DBO.taxlots_accounts_join'.STATE", # This field is always wrong
+                "PointAddress.POSTAL 'Clatsop.DBO.taxlots_accounts_join'.Clatsop_dbo_AT_taxlot_accoun_74",
+            ],
+            'file': basename + 'parcel_point_address' + suffix,
+        },        {
+            'servicename': 'Clatsop_County_Parcel_Locator',
+            'reference_data': [[taxlots, 'Parcel']],
+            'fieldmap': [
+                # Don't we have stupid field names
+                "Parcel.PARCEL_NAME 'Clatsop.DBO.taxlots_accounts_join'.Clatsop_dbo_AT_taxlot_accoun_66", 
+                "PointAddress.HOUSE_NUMBER 'Clatsop.DBO.taxlots_accounts_join'.Clatsop_dbo_AT_taxlot_accoun_70",
+                "Parcel.STREET_PREFIX_DIR 'Clatsop.DBO.taxlots_accounts_join'.Clatsop_dbo_AT_taxlot_accoun_73",
+                "Parcel.STREET_NAME 'Clatsop.DBO.taxlots_accounts_join'.Clatsop_dbo_AT_taxlot_accoun_71",
+                "Parcel.SUB_ADDRESS_UNIT 'Clatsop.DBO.taxlots_accounts_join'.Clatsop_dbo_AT_taxlot_accoun_75",
+                "Parcel.CITY 'Clatsop.DBO.taxlots_accounts_join'.Clatsop_dbo_AT_taxlot_accoun_61",
+                #"Parcel.SUBREGION 'Clatsop.DBO.taxlots_accounts_join'.County", # This field has 4 or NULL in it.
+                #"Parcel.REGION 'Clatsop.DBO.taxlots_accounts_join'.STATE", # This field is always wrong
+                "Parcel.POSTAL 'Clatsop.DBO.taxlots_accounts_join'.Clatsop_dbo_AT_taxlot_accoun_74",
+            ],
+            'file': basename + 'parcel' + suffix,
+        },
+        {
+            'servicename': 'Clatsop_County_E911_Address_Locator',
+            'reference_data': [[address_points, 'PointAddress']],
+            'fieldmap': [
+                "PointAddress.HOUSE_NUMBER 'Clatsop.DBO.address_points'.addNum",
+                "PointAddress.STREET_PREFIX_DIR 'Clatsop.DBO.address_points'.preDir",
+                "PointAddress.STREET_PREFIX_TYPE 'Clatsop.DBO.address_points'.preType",
+                "PointAddress.STREET_NAME 'Clatsop.DBO.address_points'.gcLgFlName",
+                "PointAddress.STREET_SUFFIX_TYPE 'Clatsop.DBO.address_points'.postType",
+                "PointAddress.STREET_SUFFIX_DIR 'Clatsop.DBO.address_points'.postDir",
+                "PointAddress.FULL_STREET_NAME 'Clatsop.DBO.address_points'.gcFullName",
+                "PointAddress.SUB_ADDRESS_UNIT 'Clatsop.DBO.address_points'.unit",
+                "PointAddress.CITY 'Clatsop.DBO.address_points'.incMuni",
+                "PointAddress.POSTAL 'Clatsop.DBO.address_points'.zipCode",
+            ],
+            'file': basename + 'e911Address' + suffix,
+        },
+        {
+            'servicename': 'Clatsop_County_Street_Address_Locator',
+            'reference_data': [[roads, 'StreetAddress']],
+            'fieldmap': [
+                "StreetAddress.HOUSE_NUMBER_FROM_LEFT 'Clatsop.DBO.roads'.FromAddressLeft",
+                "StreetAddress.HOUSE_NUMBER_TO_LEFT 'Clatsop.DBO.roads'.ToAddressLeft",
+                "StreetAddress.HOUSE_NUMBER_FROM_RIGHT 'Clatsop.DBO.roads'.ToAddressRight",
+                "StreetAddress.HOUSE_NUMBER_TO_RIGHT 'Clatsop.DBO.roads'.ToAddressRight",
+                "StreetAddress.STREET_PREFIX_DIR 'Clatsop.DBO.roads'.Prefix",
+                "StreetAddress.STREET_NAME 'Clatsop.DBO.roads'.Street",
+                "StreetAddress.FULL_STREET_NAME 'Clatsop.DBO.roads'.StreetName"
+            ],
+            'file': basename + 'roads' + suffix,
+        },
+        {
+            'servicename': 'Clatsop_County_Point_of_Interest_Locator',
+            'reference_data': [[points_of_interest, 'POI']],
+            'fieldmap': [
+                "POI.FEATURE_ID 'Clatsop.DBO.points_of_interest'.FEATURE_ID",
+                "POI.PLACE_NAME 'Clatsop.DBO.points_of_interest'.name",
+                "POI.CATEGORY 'Clatsop.DBO.points_of_interest'.category",
+                "POI.SUBCATEGORY 'Clatsop.DBO.points_of_interest'.subcategory",
+            ],
+            'file': basename + 'poi' + suffix,
+        },
+    ]
+
+    with arcpy.EnvManager(scratchWorkspace=scratch_workspace, workspace=workspace):
         # This creates .loc and .loz files that contain a copy of all the data,
         # so once that is done the in_memory copies are no longer needed.
 
-        # You can comment this out if you want, to test only publishing...
-        rval = create_locator(locator_file)
+        composite_service_name = "Clatsop_County_Locator"  # No spaces or special characters here
 
-        # for testing, update the date, uncomment.
-        # locator_file = "C:\\Temp\\locator_20220824_1124"
-        #locator_file = "K:\\e911\\clatsop_county_20220824_1124"
-        publish_locator(locator_file, service_name)
+        for locator in locators:
+            msg = create_locator(locator)
+            print(msg)
 
-        if item:
-            print("Setting sharing options…")
-            set_sharing(item, groups)
+            continue
 
-            comment = "%s updated by \"%s\"" % (datestamp, myname)
-            item.add_comment(comment)
+            # for testing, update the date, uncomment.
+            # locator_file = "C:\\Temp\\locator_20220824_1124"
+            # locator_file = "K:\\e911\\clatsop_county_20220824_1124"
+            status = publish_locator(locator)
+            if status:
+                newItem = pcm.findItem(title = service_name)
+                if not newItem:
+                    print("The service was not found.")
+                else:
+                    print("Setting sharing options…")
+                    try:
+                        comment = '%s updated by "%s"' % (datestamp, myname)
+                        set_sharing(newItem, groups)
+                        newItem.add_comment(comment)
+            
+                    except Exception as e:
+                        print("Could not find the new service, weird huh?", e)
+                        pass
 
 # That's all!
-

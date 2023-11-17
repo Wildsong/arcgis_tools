@@ -6,7 +6,7 @@ My intention is to collect the tools that I am writing here in this repository.
 The apps.code-workspace file here helps me to edit our apps and our maps.
 
 
-## Set up
+## Set up (and after Pro upgrades)
 
 Visual Studio Code, which allows me to specify a Conda environment as a setting.
 
@@ -21,25 +21,40 @@ I hate cloning the old ArcGIS Pro environment because then it's painful to upgra
 Currently, arcgis and arcpy will determine which (out of date) version of python will be selected.
 Today it's taking infinite time to 'conda install arcpy' so I am using 'clone'. Sigh.
 
+### After upgrades
+
+Recreate the environment again after upgrades to ArcGIS Pro. (It will tell you it needs upgrades by failing!)
+I suppose there is an upgrade path? I simply nuke it and start over. Find the path with
+"conda env list" and delete the entire folder for arcgis_tools!
+
+### Create dedicate Conda environment
+
     conda create -n arcgis_tools --clone arcgispro-py3
     conda activate arcgis_tools
-    conda install autopep8 python-dotenv requests
+    conda install black python-dotenv requests
 
-This process gives the warnings about an inconsistent environment but when I am done, everything seems to work okay. 
+This process gives the warnings about an inconsistent environment but when I am done, 
+everything seems to work okay. 
 
-Note: The opencv package is currently only needed to generate thumbnails.
-Not sure what I was doing with Rocket-python... it can send messages to a chat client, 
-maybe I wanted to do progress reports, a great idea actually.
+You can test it by just running Python in a terminal window, for example, it looks like this today.
 
-Optionally, install these:
-
-    conda activate arcgis_tools
-    conda install opencv
-    pip install rocket-python
+    python
+    Python 3.9.18 [MSC v.1931 64 bit (AMD64)] :: Anaconda, Inc. on win32
+    Type "help", "copyright", "credits" or "license" for more information.
+    >>> import arcpy
+    >>> arcpy.__version__
+    '3.2'
+    >>> import arcgis
+    >>> arcgis.__version__
+    '2.2.0.1'
+    >>> import osgeo.gdal as gd
+    >>> gd.__version__
+    '3.7.0e'
+    quit()
 
 On a server there is a different package for arcgpy, see https://enterprise.arcgis.com/en/server/latest/develop/linux/scripting-service-publishing-with-arcpy.htm
-Refer to that page for the very limited list of things you can do with arcpy on a server. Probably not worth the bother
-but here is how to install:
+Refer to that page for the very limited list of things you can do with arcpy on a server. 
+Probably not worth the bother but here is how to install:
 
     conda install -n arcgis_tools arcpy-server=10.9 -c esri
 
