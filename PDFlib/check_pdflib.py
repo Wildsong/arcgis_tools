@@ -39,6 +39,8 @@ if __name__ == '__main__':
     assert(os.path.exists(Config.PDFLIB))
         
     try:
+        # They stupidly throw a warning message about verify_cert
+        # so I have to wrap this script in a shell script to catch it.
         gis = GIS(Config.PORTAL_URL, Config.PORTAL_USER,
                   Config.PORTAL_PASSWORD, verify_cert=False)
     except Exception as e:
