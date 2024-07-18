@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "../../WABDE"
+		},
+		{
+			"path": ".."
+		}
+	],
+    "settings": {
+        "git.ignoreLimitWarning": true
+    }
+}
