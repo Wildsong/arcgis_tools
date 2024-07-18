@@ -1,0 +1,156 @@
+@font-face {
+    font-family:"Oswald";
+    src: url("../assets/Oswald-VariableFont_wght.ttf");
+}
+
+@font-face {
+    font-family:"Barlow";
+    src: url("../assets/Barlow-Bold.ttf");
+}
+
+h3 {
+    color:rgb(80,80,80,.80);
+    background-color: rgb(33,37,41,.03);
+}
+
+p {
+    margin-bottom: 5px !important;
+}
+
+.container {
+    padding-bottom: 8px;
+}
+.spinner-border {
+    margin: 4px;
+    color:  rgb(25,118,210,.3);
+}
+
+.instrument-detail {
+    background-color: rgb(25,118,210,.13); /* copied this color from MUI table */
+    padding: 4px;
+}
+
+.input-group {
+    margin: 3px;
+}
+.input-group-text {
+    background-color: rgb(100,100,100,.03);
+    border-width: 1px;
+    border-color: rgb(30,30,30, .03);
+}
+.react-datepicker-wrapper {
+    margin-top: 5px;
+}
+.btn {
+    margin-left: 4px;
+}
+
+.disclaimer {
+    font-size:smaller;
+    line-height: 90%;
+    color:rgb(160, 159, 159);
+}
+
+footer {
+    font-size:smaller;
+    margin: 10;
+}
+  
+.branding__link {
+    display: -webkit-inline-box;
+    display: -ms-inline-flexbox;
+    display: inline-flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    height: 141px;
+    width: 100%;
+    padding: 0 60px;
+    margin: 0;
+    text-decoration: none;
+}
+.branding__link:focus,
+.branding__link:hover {
+    text-decoration: none;
+}
+@media (min-width: 1024px) {
+  .branding__link {
+      -webkit-box-pack: start;
+      -ms-flex-pack: start;
+      justify-content: flex-start;
+      width: auto;
+      padding: 0;
+  }
+}
+
+.branding__image-wrapper {
+    max-width: 100%;
+    -ms-flex-item-align: center;
+    align-self: center;
+  }
+@media (min-width: 1024px) {
+  .branding__image-wrapper {
+      display: block;
+      padding: 0 10px;
+  }
+}
+
+.branding__image {
+    display: block;
+    -ms-flex-item-align: center;
+    align-self: center;
+    max-width: 100%;
+    height: auto;
+  }
+.branding__text {
+    display: none;
+  }
+@media (min-width: 1024px) {
+  .branding__text {
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-orient: vertical;
+      -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+      flex-direction: column;
+      -webkit-box-pack: center;
+      -ms-flex-pack: center;
+      justify-content: center;
+      -webkit-box-align: start;
+      -ms-flex-align: start;
+      align-items: flex-start;
+      height: 141px;
+  }
+}
+
+.branding__text--item {
+    display: block;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.branding__text--city {
+    font-family: 'Oswald',fantasy;
+    font-size: 28px;
+    font-size: 2.5rem;
+    font-weight: 700;
+    text-transform: none;
+    color:black;
+}
+
+
+.branding__text--state {
+    font-family:'Barlow';
+    font-size: 20px;
+    font-size: 1/5rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color:black;
+}
+

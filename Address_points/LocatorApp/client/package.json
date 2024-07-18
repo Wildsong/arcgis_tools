@@ -1,0 +1,79 @@
+{
+    "name": "locator_client",
+    "version": "1.0.0",
+    "description": "County Records app, web client component",
+    "keywords": [
+        "gis", "locator", "geocoding",
+        "react", "parcel"
+    ],
+    "browserslist": [
+        "last 1 Chrome versions"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://cc-codebase.clatsop.co.clatsop.or.us/git/.git"
+    },
+    "license": "GPL3",
+    "contributors": [
+        "Brian H Wilson <bwilson@clatsopcounty.gov>"
+    ],
+    "bugs": {
+        "email": "bwilson@clatsopcounty.gov"
+    },
+    "homepage": "https://foxtrot.clatsopcounty.gov/locator",
+    "dependencies": {
+        "@emotion/react": "^11.11.1",
+        "@emotion/styled": "^11.11.0",
+        "@mui/material": "^5.13.6",
+        "@mui/x-data-grid": "^6.9.0",
+        "@tippyjs/react": "^4.2.6",
+        "bootstrap": "^5.3.0",
+        "http-server": "^14.1.1",
+        "react": "^18.2.0",
+        "react-bootstrap": "^2.8.0",
+        "react-dnd": "^16.0.1",
+        "react-dnd-html5-backend": "^16.0.1",
+        "react-dom": "^18.2.0"
+    },
+    "devDependencies": {
+        "@babel/cli": "^7.22.5",
+        "@babel/core": "^7.22.5",
+        "@babel/plugin-proposal-class-properties": "^7.12.13",
+        "@babel/plugin-proposal-object-rest-spread": "^7.12.13",
+        "@babel/plugin-transform-object-assign": "^7.12.13",
+        "@babel/preset-env": "^7.22.5",
+        "@babel/preset-react": "^7.22.5",
+        "@parcel/transformer-graphql": "^2.9.2",
+        "@parcel/transformer-sass": "^2.9.3",
+        "eslint": "^8.43.0",
+        "parcel": "^2.9.2",
+        "process": "^0.11.10"
+    },
+    "source": "index.html",
+    "scripts": {
+        "test": "parcel serve test.html --open",
+        "dev": "parcel serve -p 8080 index.html",
+        "prod": "http-server public",
+        "start": "npm run dev",
+        "build": "parcel build --dist-dir public --public-url /",
+        "dockerize": "bash scripts/docker_build.sh",
+        "publish": "npm run dockerize && bash scripts/docker_push.sh"
+    },
+    "babel": {
+        "presets": [
+            "@babel/preset-env",
+            "@babel/preset-react",
+            "es2018"
+        ],
+        "plugins": [
+            "@babel/plugin-proposal-object-rest-spread",
+            [
+                "@babel/plugin-proposal-class-properties",
+                {
+                    "loose": true
+                }
+            ],
+            "@babel/plugin-transform-async-to-generator"
+        ]
+    }
+}
