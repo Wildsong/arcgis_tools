@@ -7,8 +7,6 @@ class Config(object):
     load_dotenv()
 
     PORTAL_URL = os.environ.get('PORTAL_URL')
-    PORTAL_USER = os.environ.get("PORTAL_USER")
-    PORTAL_PASSWORD = os.environ.get("PORTAL_PASSWORD")
 
     BASEMAP_GALLERY = 'CC Basemap Gallery for Web Maps'
     BASEMAP_GALLERY_ID = 'c8249f276d564b9bba0001128bce3787'
@@ -19,8 +17,6 @@ class Config(object):
     
     HUB_URL = os.environ.get('HUB_URL')
     AGO_URL = os.environ.get('AGO_URL')
-    AGO_USER = os.environ.get("AGO_USER")
-    AGO_PASSWORD = os.environ.get("AGO_PASSWORD")
     
     SERVER_URL = os.environ.get('SERVER_URL')
 
@@ -72,7 +68,7 @@ if __name__ == "__main__":
     assert os.path.exists(Config.SDE_FILE)
 
     # Test connection to ArcGIS Online
-    gis = GIS(Config.AGO_URL, Config.AGO_USER, Config.AGO_PASSWORD)
+    gis = GIS(profile="ago")
     print("Logged in as", gis.properties["user"]["fullName"], 'to', gis.properties['name'])
 
     # Test connection to ArcGIS Hub, whatever that is. This fails
@@ -80,8 +76,8 @@ if __name__ == "__main__":
     #print("Logged in as", gis.properties["user"]["fullName"], 'to', gis.properties['name'])
 
     # Test a connection via normal auth
-    #gis = GIS(Config.PORTAL_URL, Config.PORTAL_USER, Config.PORTAL_PASSWORD)
-    #print(gis)
+    gis = GIS(profile=os.environ.get('USERNAME'))
+    print(gis)
 
     try:
         # Test a connection via a Pro token

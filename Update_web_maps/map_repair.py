@@ -145,7 +145,7 @@ if __name__ == "__main__":
     fancydatestamp = now.strftime("%H:%M %m-%d-%y")
 
     try:
-        gis = GIS(Config.PORTAL_URL, Config.PORTAL_USER, Config.PORTAL_PASSWORD)
+        gis = GIS(profile=os.environ.get('USERNAME'))
         print(f"Logged in as \"{gis.properties.user.username}\".")
     except Exception as e:
         print(f"Could not connect to portal. {e}")

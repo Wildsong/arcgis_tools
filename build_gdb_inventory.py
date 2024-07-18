@@ -38,7 +38,7 @@ def get_portal_content(gis):
 
 if __name__ == "__main__":
 
-    gis = GIS(Config.PORTAL_URL, Config.PORTAL_USER, Config.PORTAL_PASSWORD)
+    gis = GIS(profile=os.environ.get('USERNAME'))
     pcd = get_portal_content(gis)
     
     # Generate a CSV of portal content

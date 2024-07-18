@@ -11,7 +11,7 @@ if __name__ == "__main__":
 
     serviceName = Config.SERVER_URL + \
         "/rest/services/clatsop_county_no_parcels/GeocodeServer"
-    gis = GIS(Config.PORTAL_URL, Config.PORTAL_USER, Config.PORTAL_PASSWORD)
+    gis = GIS(profile=os.environ.get('USERNAME'))
     print(gis)
     gc = arcgis.geocoding.get_geocoders(gis)[0]
 

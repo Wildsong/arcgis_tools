@@ -21,6 +21,17 @@ I hate cloning the old ArcGIS Pro environment because then it's painful to upgra
 Currently, arcgis and arcpy will determine which (out of date) version of python will be selected.
 Today it's taking infinite time to 'conda install arcpy' so I am using 'clone'. Sigh.
 
+### Profiles
+
+You can create profiles with a couple lines of Python.
+Run this in a Jupyter notebook, for example.
+
+    from arcgis.gis import GIS
+    ago = GIS(url="https://clatsopcounty.maps.arcgis.com/", username="bwilsoncc", password="MYSECRET", profile="ago")
+    print(f"Connected {ago}")
+
+Then in the code use profile="ago" to connect to that account. This beats embedding credentials in files.
+
 ### After upgrades
 
 Recreate the environment again after upgrades to ArcGIS Pro. (It will tell you it needs upgrades by failing!)

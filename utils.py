@@ -49,11 +49,10 @@ if __name__ == "__main__":
     print(local2utc(datetime.now()))
 
     try:
-        portal = GIS(Config.PORTAL_URL, Config.PORTAL_USER, Config.PORTAL_PASSWORD)
+        portal = GIS(profile=os.environ.get('USERNAME'))
         #print("Logged in as " + str(portal.properties.user.username))
     except Exception as e:
-        print("Could not connect to portal. \"%s\"" % e)
-        print("Make sure the environment variables are set correctly.")
+        print(f"Could not connect to portal. \"{e}\"")
         exit(-1)
 
     layers = [

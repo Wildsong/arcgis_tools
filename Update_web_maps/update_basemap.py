@@ -139,8 +139,7 @@ def test_mil():
 if __name__ == "__main__":     
 
     print("Connecting to ", Config.PORTAL_URL)
-    gis = GIS(Config.PORTAL_URL, Config.PORTAL_USER, Config.PORTAL_PASSWORD, 
-            verify_cert=False)
+    gis = GIS(profile=os.environ.get('USERNAME'))
 
     old_id = "38eb0a5b3ab1468f8465c76a01c6375f"
     new_id = "6868cf24b52c4230bc97dc9815d4caa5"

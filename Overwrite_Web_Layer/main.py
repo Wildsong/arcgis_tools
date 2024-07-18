@@ -130,8 +130,6 @@ def fetch_tile(service_url, output_file):
     token_url = Config.PORTAL_URL + '/sharing/rest/generateToken'
     referer = Config.SERVER_URL + '/rest/services'
     query_dict1 = {
-        'username':   Config.PORTAL_USER,
-        'password':   Config.PORTAL_PASSWORD,
         'expiration': str(1440),
         'client':     'referer',
         'referer':     referer
@@ -171,10 +169,11 @@ if __name__ == '__main__':
     # First I try to update an existing definition.
     # If that fails then I create a new one...
 
-    gis = GIS(Config.PORTAL_URL, Config.PORTAL_USER, Config.PORTAL_PASSWORD)
+    username = os.environ.get('USERNAME')
+    gis = GIS(profile=username)
 
     print("Searching for an existing SD \"%s\" on portal…" % service_name)
-    query = "{} AND owner:{}".format(service_name, Config.PORTAL_USER)
+    query = f"{service_name} AND owner:{username}*"
     try:
         sdItem = gis.content.search(query, item_type="Service Definition")[0]
         print("Found SD: {}, ID: {} Uploading and overwriting…".format(
@@ -193,7 +192,7 @@ if __name__ == '__main__':
         # https://pro.arcgis.com/en/pro-app/latest/tool-reference/server/upload-service-definition.htm
         # You can override permissions, ownership, groups here too.
         try:
-            rval = arcpy.SignInToPortal(Config.PORTAL_URL, Config.PORTAL_USER, Config.PORTAL_PASSWORD)
+            rval = arcpy.SignInToPortal(Config.PORTAL_URL)
             rval = arcpy.server.UploadServiceDefinition(in_sd_file=sd_file, in_server="My Hosted Services", in_startupType="STARTED")
         except Exception as e:
             print("Upload failed.", e)

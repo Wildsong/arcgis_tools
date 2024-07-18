@@ -185,10 +185,7 @@ if __name__ == '__main__':
 
     from config import Config
     import json
-    gis = GIS(Config.PORTAL_URL, Config.PORTAL_USER, Config.PORTAL_PASSWORD)
-    assert gis
-    # FIXME SOMEDAY
-    #gis = GIS(url=Config.PORTAL_URL, profile=Config.PORTAL_PROFILE)
+    gis = GIS(profile=os.environ.get('USERNAME'))
     assert gis
     print("Logged in as " + str(gis.properties.user.username))
     pcm = PortalContent(gis)

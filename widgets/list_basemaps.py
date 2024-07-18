@@ -9,7 +9,7 @@ from pprint import pprint
 # =============================================================
 
 if __name__ == '__main__':
-    gis = GIS(Config.PORTAL_URL, Config.PORTAL_USER, Config.PORTAL_PASSWORD)
+    gis = GIS(profile=os.environ.get('USERNAME'))
 
     cm = gis.content
     group = Group(gis, Config.BASEMAP_GALLERY_ID)

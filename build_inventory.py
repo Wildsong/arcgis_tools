@@ -137,15 +137,13 @@ if __name__ == "__main__":
 
     # Weird stuff happens if these are not defined.
     assert(Config.PORTAL_URL)
-    assert(Config.PORTAL_USER)
-    assert(Config.PORTAL_PASSWORD)
     assert(Config.SERVER_URL)
 
     # See arcgis.gis.ContentManager
     # For query definition, refer to http://bitly.com/1fJ8q31
     #q = "title:Clatsop County Template"
     #q = "owner:bwilson@CLATSOP"
-    gis = GIS(Config.PORTAL_URL, Config.PORTAL_USER, Config.PORTAL_PASSWORD)
+    gis = GIS(profile=os.environ.get('USERNAME'))
     #inventory_maps(gis)
 
     types = [

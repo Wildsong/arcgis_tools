@@ -140,8 +140,7 @@ def find_interesting_maps(gis, q="", interesting_layer_titles=list(), interestin
 
 
 if __name__ == '__main__':
-    gis = GIS(Config.PORTAL_URL, Config.PORTAL_USER,
-              Config.PORTAL_PASSWORD, verify_cert=False)
+    gis = GIS(profile=os.environ.get('USERNAME'))
 
     # Find maps with the layer we're interested in -- search by ID or title or something else
 

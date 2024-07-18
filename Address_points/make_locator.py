@@ -172,9 +172,9 @@ if __name__ == "__main__":
     assert os.path.exists(Config.SDE_FILE)
 
     portal = arcpy.GetActivePortalURL()  # I wonder where it finds this.
-    result = arcpy.SignInToPortal(portal, Config.PORTAL_USER, Config.PORTAL_PASSWORD)
+    result = arcpy.SignInToPortal(portal)
 
-    gis = GIS(portal, Config.PORTAL_USER, Config.PORTAL_PASSWORD, verify_cert=False)
+    gis = GIS(profile=os.environ.get('USERNAME'))
     print("Connected to ", portal)
     pcm = PortalContent(gis)
     groups = gis.groups.search("GIS Team")

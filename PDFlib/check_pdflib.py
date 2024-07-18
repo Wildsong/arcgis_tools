@@ -25,24 +25,19 @@ except:
 class Config(object):
     PORTAL_URL = os.environ.get('PORTAL_URL')
     SERVER_URL = os.environ.get('SERVER_URL')
-    PORTAL_USER = os.environ.get("PORTAL_USER")
-    PORTAL_PASSWORD = os.environ.get("PORTAL_PASSWORD")
     PDFLIB = os.environ.get("PDFLIB")
 
 if __name__ == '__main__':
 
     assert(Config.PORTAL_URL)
     assert(Config.SERVER_URL)
-    assert(Config.PORTAL_USER)
-    assert(Config.PORTAL_PASSWORD)
     assert(Config.PDFLIB)
     assert(os.path.exists(Config.PDFLIB))
         
     try:
         # They stupidly throw a warning message about verify_cert
         # so I have to wrap this script in a shell script to catch it.
-        gis = GIS(Config.PORTAL_URL, Config.PORTAL_USER,
-                  Config.PORTAL_PASSWORD, verify_cert=False)
+        gis = GIS(profile=os.environ.get('USERNAME'))
     except Exception as e:
         print("Can't sign in!",e)
         exit(1)
