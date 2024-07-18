@@ -1,0 +1,133 @@
+{
+  "url": "https://delta.co.clatsop.or.us/server/rest/services/Roads/MapServer/2",
+  "name": "Find Road",
+  "icon": {
+    "angle": 0,
+    "xoffset": 0,
+    "yoffset": 0,
+    "type": "esriPMS",
+    "url": "https://delta.co.clatsop.or.us/portal/portalimages/Symbols/Emergency-Management/Law-Enforcement-Motor-Vehicle-Theft.png",
+    "imageData": "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",
+    "contentType": "image/png",
+    "width": 30,
+    "height": 30
+  },
+  "filter": {
+    "logicalOperator": "AND",
+    "parts": [
+      {
+        "fieldObj": {
+          "name": "StreetName",
+          "label": "StreetName",
+          "dateFormat": "",
+          "shortType": "string",
+          "type": "esriFieldTypeString"
+        },
+        "operator": "stringOperatorContains",
+        "valueObj": { "isValid": true, "type": "value", "value": null },
+        "interactiveObj": {
+          "prompt": "Street name",
+          "hint": "for example, Olney",
+          "cascade": "none"
+        },
+        "caseSensitive": false
+      }
+    ],
+    "expr": "",
+    "displaySQL": ""
+  },
+  "showSQL": false,
+  "spatialFilter": {
+    "currentMapExtent": null,
+    "drawing": null,
+    "useFeatures": null,
+    "fullLayerExtent": { "default": true }
+  },
+  "popupInfo": {
+    "title": "{StreetName}",
+    "fieldInfos": [
+      {
+        "fieldName": "OBJECTID",
+        "label": "OBJECTID",
+        "tooltip": "",
+        "visible": false,
+        "format": null,
+        "stringFieldOption": "textbox"
+      },
+      {
+        "fieldName": "alias",
+        "label": "Alternate name",
+        "tooltip": "",
+        "visible": true,
+        "format": null,
+        "stringFieldOption": "textbox"
+      },
+      {
+        "fieldName": "StreetName",
+        "label": "StreetName",
+        "tooltip": "",
+        "visible": false,
+        "format": null,
+        "stringFieldOption": "textbox"
+      },
+      {
+        "fieldName": "Shape_Length",
+        "label": "Shape.STLength()",
+        "tooltip": "",
+        "visible": false,
+        "format": { "places": 2, "digitSeparator": true },
+        "stringFieldOption": "textbox"
+      },
+      {
+        "fieldName": "FunClassD",
+        "label": "Functional Class D",
+        "tooltip": "",
+        "visible": true,
+        "format": null,
+        "stringFieldOption": "textbox"
+      },
+      {
+        "fieldName": "Owner",
+        "label": "Owner / Operator",
+        "tooltip": "",
+        "visible": true,
+        "format": null,
+        "stringFieldOption": "textbox"
+      },
+      {
+        "fieldName": "surface",
+        "label": "Surface material",
+        "tooltip": "",
+        "visible": true,
+        "format": null,
+        "stringFieldOption": "textbox"
+      },
+      {
+        "fieldName": "Miles",
+        "label": "Section length (miles)",
+        "tooltip": "",
+        "visible": true,
+        "format": { "places": 1, "digitSeparator": true },
+        "stringFieldOption": "textbox"
+      }
+    ],
+    "description": null,
+    "showAttachments": false,
+    "mediaInfos": [],
+    "readFromWebMap": false
+  },
+  "orderByFields": ["StreetName ASC"],
+  "useLayerSymbol": false,
+  "resultsSymbol": {
+    "color": [101, 207, 99, 255],
+    "width": 3,
+    "type": "esriSLS",
+    "style": "esriSLSSolid"
+  },
+  "canModifySymbol": true,
+  "enableExport": false,
+  "defaultExpand": true,
+  "singleResultLayer": true,
+  "webMapLayerId": null,
+  "customResultName": true
+}
