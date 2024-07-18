@@ -2,7 +2,6 @@ test_workspace.gdb
 *.sde
 *.ipynb
 
-address_points*
 *.csv
 *.xml
 
@@ -138,3 +137,4 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+package-lock.json
