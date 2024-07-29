@@ -1,5 +1,4 @@
 #!/usr/bin/env -S conda run -n arcgis_tools --no-capture-output python
-# Remember to set credentials etc in the .conda/envs/arcgis_tools/etc/conda/activate.d/ files.
 """
     Check for missing taxmap PDF files. 
     Use the -v option to get output even when nothing is missing. 
@@ -23,14 +22,12 @@ except:
 
 
 class Config(object):
-    PORTAL_URL = os.environ.get('PORTAL_URL')
-    SERVER_URL = os.environ.get('SERVER_URL')
+    PORTAL_PROFILE = "delta"
     PDFLIB = os.environ.get("PDFLIB")
 
 if __name__ == '__main__':
 
-    assert(Config.PORTAL_URL)
-    assert(Config.SERVER_URL)
+    assert(Config.PORTAL_PROFILE)
     assert(Config.PDFLIB)
     assert(os.path.exists(Config.PDFLIB))
         
@@ -38,13 +35,14 @@ if __name__ == '__main__':
         # They stupidly throw a warning message about verify_cert
         # so I have to wrap this script in a shell script to catch it.
         gis = GIS(profile=os.environ.get('USERNAME'))
+        server_url = gis.properties.url
     except Exception as e:
         print("Can't sign in!",e)
         exit(1)
 
     try:
         # Get a dataframe of all the taxlots
-        url = f"{Config.SERVER_URL}/rest/services/Taxlots/FeatureServer/1"
+        url = f"{server_url}/rest/services/Taxlots/FeatureServer/1"
         layer = arcgis.features.FeatureLayer(url,gis)
     except Exception as e:
         print(e)
